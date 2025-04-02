@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Gift Shop - Find the Perfect Gift{% endblock %}
+
+{% block content %}
+<!-- Optional Categories Section -->
+<div class="categories-section">
+    <div class="category-card">
+        <h3>Birthday Gifts</h3>
+        <p>Perfect presents for celebrations</p>
+    </div>
+    <div class="category-card">
+        <h3>Anniversary Gifts</h3>
+        <p>Romantic gifts for special dates</p>
+    </div>
+    <div class="category-card">
+        <h3>Wedding Gifts</h3>
+        <p>Memorable presents for couples</p>
+    </div>
+    <div class="category-card">
+        <h3>Holiday Gifts</h3>
+        <p>Seasonal gifts for everyone</p>
+    </div>
+</div>
+
+<div class="main-section">
+    <section class="products-section">
+        <h2>Our Products</h2>
+        <div class="products-container">
+            <!-- Product cards -->
+            <div class="product-card" data-id="1" data-type="product">
+                <img src="{{ url_for('static', filename='images/products/birthday_card.jpg') }}" alt="Birthday Card">
+                <h3>Birthday Card</h3>
+                <p class="price">$4.99</p>
+                <p class="description">A beautiful birthday card for your loved ones</p>
+                <button class="add-to-cart">Add to Cart</button>
+            </div>
+            <div class="product-card" data-id="2" data-type="product">
+                <img src="{{ url_for('static', filename='images/products/chocolate_box.jpg') }}" alt="Chocolate Box">
+                <h3>Chocolate Box</h3>
+                <p class="price">$19.99</p>
+                <p class="description">Premium assorted chocolates</p>
+                <button class="add-to-cart">Add to Cart</button>
+            </div>
+            <div class="product-card" data-id="3" data-type="product">
+                <img src="{{ url_for('static', filename='images/products/teddy_bear.jpg') }}" alt="Teddy Bear">
+                <h3>Teddy Bear</h3>
+                <p class="price">$14.99</p>
+                <p class="description">Soft plush teddy bear</p>
+                <button class="add-to-cart">Add to Cart</button>
+            </div>
+            <div class="product-card" data-id="4" data-type="product">
+                <img src="{{ url_for('static', filename='images/products/wine.jpg') }}" alt="Wine Bottle">
+                <h3>Wine Bottle</h3>
+                <p class="price">$24.99</p>
+                <p class="description">Red wine bottle, vintage 2018</p>
+                <button class="add-to-cart">Add to Cart</button>
+            </div>
+        </div>
+        
+        <h2>Gift Combos</h2>
+        <div class="combos-container">
+            <!-- Combo cards -->
+            <div class="product-card" data-id="1" data-type="combo">
+                <img src="{{ url_for('static', filename='images/products/birthday_combo.jpg') }}" alt="Birthday Special">
+                <h3>Birthday Special</h3>
+                <p class="price">$29.99</p>
+                <p class="description">Perfect birthday gift combo</p>
+                <button class="add-to-cart">Add to Cart</button>
+            </div>
+            <div class="product-card" data-id="2" data-type="combo">
+                <img src="{{ url_for('static', filename='images/products/anniversary_combo.jpg') }}" alt="Anniversary Delight">
+                <h3>Anniversary Delight</h3>
+                <p class="price">$39.99</p>
+                <p class="description">Romantic anniversary combo</p>
+                <button class="add-to-cart">Add to Cart</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="chatbot-section">
+        <h2>Gift Advisor</h2>
+        <div class="chatbot-container">
+            <div class="chat-messages" id="chatMessages">
+                <div class="bot-message">
+                    <p>Hello! I can help you find the perfect gift. What occasion are you shopping for?</p>
+                </div>
+            </div>
+            <div class="chat-input">
+                <input type="text" id="chatInput" placeholder="Ask for gift recommendations...">
+                <button id="sendButton">Send</button>
+            </div>
+        </div>
+        
+        <div class="recommendations-container" id="recommendations">
+            <!-- Recommended products will appear here -->
+        </div>
+    </section>
+</div>
+{% endblock %}
