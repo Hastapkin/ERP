@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Gift Shop - All Products{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Our Products</h1>
+</div>
+
+<div class="filter-tags" id="filterTags">
+    <!-- Active filters will appear here -->
+</div>
+
+    <!-- Products Data -->
+     
+<div class="products-container">
+    <div class="product-card" data-id="1" data-type="product">
+        <img src="{{ url_for('static', filename='images/products/birthday_card.jpg') }}" alt="Birthday Card">
+        <h3>Birthday Card</h3>
+        <p class="price">$0.99</p>
+        <p class="description">A beautiful birthday card for your loved ones</p>
+        <button class="add-to-cart">Add to Cart</button>
+    </div>
+    <div class="product-card" data-id="2" data-type="product">
+        <img src="{{ url_for('static', filename='images/products/chocolate_box.jpg') }}" alt="Chocolate Box">
+        <h3>Chocolate Box</h3>
+        <p class="price">$0.99</p>
+        <p class="description">Premium assorted chocolates</p>
+        <button class="add-to-cart">Add to Cart</button>
+    </div>
+    <div class="product-card" data-id="3" data-type="product">
+        <img src="{{ url_for('static', filename='images/products/teddy_bear.jpg') }}" alt="Teddy Bear">
+        <h3>Teddy Bear</h3>
+        <p class="price">$0.99</p>
+        <p class="description">Soft plush teddy bear</p>
+        <button class="add-to-cart">Add to Cart</button>
+    </div>
+    <div class="product-card" data-id="4" data-type="product">
+        <img src="{{ url_for('static', filename='images/products/wine.jpg') }}" alt="Wine Bottle">
+        <h3>Wine Bottle</h3>
+        <p class="price">$0.99</p>
+        <p class="description">Red wine bottle, vintage 2018</p>
+        <button class="add-to-cart">Add to Cart</button>
+    </div>
+
+    <!-- More products would be listed here -->
+
+</div>
+{% endblock %}

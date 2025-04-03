@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Gift Shop - Your Cart{% endblock %}
+
+{% block content %}
+<div class="cart-page">
+    <h1>Your Shopping Cart</h1>
+    
+    <div class="cart-container" id="cartItems">
+        <!-- Cart items will be displayed here -->
+        <div class="cart-item">
+            <div class="cart-item-image">
+                <img src="{{ url_for('static', filename='images/products/birthday_card.jpg') }}" alt="Birthday Card">
+            </div>
+            <div class="cart-item-details">
+                <h3>Birthday Card</h3>
+                <p class="price">$4.99</p>
+            </div>
+            <div class="cart-item-quantity">
+                <button class="quantity-btn decrease">-</button>
+                <input type="number" value="1" min="1" class="quantity-input">
+                <button class="quantity-btn increase">+</button>
+            </div>
+            <div class="cart-item-subtotal">
+                <p>$4.99</p>
+            </div>
+            <div class="cart-item-remove">
+                <button class="remove-item">×</button>
+            </div>
+        </div>
+        
+        <div class="cart-item">
+            <div class="cart-item-image">
+                <img src="{{ url_for('static', filename='images/products/teddy_bear.jpg') }}" alt="Teddy Bear">
+            </div>
+            <div class="cart-item-details">
+                <h3>Teddy Bear</h3>
+                <p class="price">$14.99</p>
+            </div>
+            <div class="cart-item-quantity">
+                <button class="quantity-btn decrease">-</button>
+                <input type="number" value="1" min="1" class="quantity-input">
+                <button class="quantity-btn increase">+</button>
+            </div>
+            <div class="cart-item-subtotal">
+                <p>$14.99</p>
+            </div>
+            <div class="cart-item-remove">
+                <button class="remove-item">×</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="cart-empty" id="cartEmpty" style="display: none;">
+        <p>Your cart is empty.</p>
+        <a href="{{ url_for('products') }}" class="btn btn-primary">Continue Shopping</a>
+    </div>
+    
+    <div class="cart-summary" id="cartSummary">
+        <div class="summary-row">
+            <span>Subtotal:</span>
+            <span>$19.98</span>
+        </div>
+        <div class="summary-row">
+            <span>Shipping:</span>
+            <span>$5.00</span>
+        </div>
+        <div class="summary-row">
+            <span>Tax:</span>
+            <span>$2.50</span>
+        </div>
+        <div class="summary-row total">
+            <span>Total:</span>
+            <span id="cartTotal">$27.48</span>
+        </div>
+        
+        <div class="cart-actions">
+            <a href="{{ url_for('products') }}" class="btn btn-secondary">Continue Shopping</a>
+            <button class="btn btn-primary checkout-btn">Proceed to Checkout</button>
+        </div>
+    </div>
+</div>
+{% endblock %}

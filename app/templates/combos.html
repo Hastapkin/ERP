@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Gift Shop - Gift Combos{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Gift Combos</h1>
+</div>
+
+<div class="filter-tags" id="filterTags">
+    <!-- Active filters will appear here -->
+</div>
+
+<!-- Combos Data -->
+
+<div class="combos-container">
+    <div class="product-card" data-id="1" data-type="combo">
+        <img src="{{ url_for('static', filename='images/products/birthday_combo.jpg') }}" alt="Birthday Special">
+        <h3>Birthday Special</h3>
+        <p class="price">$1.99</p>
+        <div class="combo-details">
+            <p>Includes: Birthday Card, Chocolate Box, Teddy Bear</p>
+        </div>
+        <p class="description">Perfect birthday gift combo for your loved ones</p>
+        <button class="add-to-cart">Add to Cart</button>
+    </div>
+    <div class="product-card" data-id="2" data-type="combo">
+        <img src="{{ url_for('static', filename='images/products/anniversary_combo.jpg') }}" alt="Anniversary Delight">
+        <h3>Anniversary Delight</h3>
+        <p class="price">$1.99</p>
+        <div class="combo-details">
+            <p>Includes: Chocolate Box, Wine Bottle</p>
+        </div>
+        <p class="description">Romantic anniversary combo for special celebrations</p>
+        <button class="add-to-cart">Add to Cart</button>
+    </div>
+    
+    <!-- More combos would be listed here -->
+
+</div>
+{% endblock %}

@@ -17,14 +17,14 @@
             <nav class="main-nav">
                 <ul>
                     <li><a href="{{ url_for('index') }}">Home</a></li>
-                    <li><a href="#">Products</a></li>
-                    <li><a href="#">Gift Combos</a></li>
-                    <li><a href="#">About Us</a></li>
+                    <li><a href="{{ url_for('products') }}">Products</a></li>
+                    <li><a href="{{ url_for('combos') }}">Gift Combos</a></li>
+                    <li><a href="{{ url_for('about') }}">About Us</a></li>
                 </ul>
             </nav>
             <div class="cart-icon">
                 <span class="cart-count">0</span>
-                <button id="cartButton">View Cart</button>
+                <button id="cartButton"onclick="window.location.href='{{ url_for('cart') }}'">View Cart</button>
             </div>
         </div>
     </header>

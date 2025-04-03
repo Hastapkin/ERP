@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Gift Shop - About Us{% endblock %}
+
+{% block content %}
+<div class="about-section">
+    <div class="about-header">
+        <h1>About Gift Shop</h1>
+    </div>
+    
+    <div class="about-content">
+        <div class="about-image">
+            <img src="{{ url_for('static', filename='images/about/store.jpg') }}" alt="Our Store">
+        </div>
+        
+        <div class="about-text">
+            <h2>Our Story</h2>
+            <p>Founded in 2020, Gift Shop started with a simple mission: to help people find the perfect gifts for their loved ones. We believe that gift-giving is an art, and finding the right gift can make a moment truly special.</p>
+            
+            <p>What began as a small online store has grown into a curated collection of thoughtful, high-quality gifts for every occasion. Our team carefully selects each product, ensuring that it meets our standards of quality and thoughtfulness.</p>
+            
+            <h2>Our Mission</h2>
+            <p>Our mission is to make gift-giving easy, enjoyable, and meaningful. We strive to offer unique products that convey genuine sentiment and create lasting memories.</p>
+            
+            <h2>Meet the Team</h2>
+            <div class="team-members">
+                <div class="team-member">
+                    <img src="{{ url_for('static', filename='images/about/team1.jpg') }}" alt="Team Member">
+                    <h3>Jane Doe</h3>
+                    <p>Founder & CEO</p>
+                </div>
+                <div class="team-member">
+                    <img src="{{ url_for('static', filename='images/about/team2.jpg') }}" alt="Team Member">
+                    <h3>John Smith</h3>
+                    <p>Creative Director</p>
+                </div>
+                <div class="team-member">
+                    <img src="{{ url_for('static', filename='images/about/team3.jpg') }}" alt="Team Member">
+                    <h3>Sarah Johnson</h3>
+                    <p>Customer Experience</p>
+                </div>
+            </div>
+            
+            <h2>Contact Us</h2>
+            <p>Have questions or suggestions? We'd love to hear from you!</p>
+            <p>Email: <a href="mailto:info@giftshop.com">info@giftshop.com</a></p>
+            <p>Phone: (555) 123-4567</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
