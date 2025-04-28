@@ -6,72 +6,53 @@
 <div class="cart-page">
     <h1>Your Shopping Cart</h1>
     
-    <div class="cart-container" id="cartItems">
-        <!-- Cart items will be displayed here -->
-        <div class="cart-item">
+    <div class="cart-container" id="cartItems" {% if not cart_items %}style="display: none;"{% endif %}>
+        <!-- Cart items -->
+        {% for item in cart_items %}
+        <div class="cart-item" data-id="{{ item.id }}" data-type="{{ item.type }}">
             <div class="cart-item-image">
-                <img src="{{ url_for('static', filename='images/products/birthday_card.jpg') }}" alt="Birthday Card">
+                <img src="{{ url_for('static', filename='images/products/' + item.image) }}" alt="{{ item.name }}">
             </div>
             <div class="cart-item-details">
-                <h3>Birthday Card</h3>
-                <p class="price">$4.99</p>
+                <h3>{{ item.name }}</h3>
+                <p class="price">${{ item.price }}</p>
             </div>
             <div class="cart-item-quantity">
                 <button class="quantity-btn decrease">-</button>
-                <input type="number" value="1" min="1" class="quantity-input">
+                <input type="number" value="{{ item.quantity }}" min="1" class="quantity-input">
                 <button class="quantity-btn increase">+</button>
             </div>
             <div class="cart-item-subtotal">
-                <p>$4.99</p>
+                <p>${{ item.subtotal }}</p>
             </div>
             <div class="cart-item-remove">
                 <button class="remove-item">×</button>
             </div>
         </div>
-        
-        <div class="cart-item">
-            <div class="cart-item-image">
-                <img src="{{ url_for('static', filename='images/products/teddy_bear.jpg') }}" alt="Teddy Bear">
-            </div>
-            <div class="cart-item-details">
-                <h3>Teddy Bear</h3>
-                <p class="price">$14.99</p>
-            </div>
-            <div class="cart-item-quantity">
-                <button class="quantity-btn decrease">-</button>
-                <input type="number" value="1" min="1" class="quantity-input">
-                <button class="quantity-btn increase">+</button>
-            </div>
-            <div class="cart-item-subtotal">
-                <p>$14.99</p>
-            </div>
-            <div class="cart-item-remove">
-                <button class="remove-item">×</button>
-            </div>
-        </div>
+        {% endfor %}
     </div>
     
-    <div class="cart-empty" id="cartEmpty" style="display: none;">
+    <div class="cart-empty" id="cartEmpty" {% if cart_items %}style="display: none;"{% endif %}>
         <p>Your cart is empty.</p>
         <a href="{{ url_for('products') }}" class="btn btn-primary">Continue Shopping</a>
     </div>
     
-    <div class="cart-summary" id="cartSummary">
+    <div class="cart-summary" id="cartSummary" {% if not cart_items %}style="display: none;"{% endif %}>
         <div class="summary-row">
             <span>Subtotal:</span>
-            <span>$19.98</span>
+            <span>${{ cart_subtotal }}</span>
         </div>
         <div class="summary-row">
             <span>Shipping:</span>
-            <span>$5.00</span>
+            <span>${{ shipping }}</span>
         </div>
         <div class="summary-row">
             <span>Tax:</span>
-            <span>$2.50</span>
+            <span>${{ tax }}</span>
         </div>
         <div class="summary-row total">
             <span>Total:</span>
-            <span id="cartTotal">$27.48</span>
+            <span id="cartTotal">${{ total }}</span>
         </div>
         
         <div class="cart-actions">

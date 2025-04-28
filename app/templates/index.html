@@ -11,58 +11,51 @@
     </div>
 </div>
 
-<!-- Products Data -->
+<!-- Categories Section -->
+<div class="categories-section">
+    {% for category in categories %}
+    <div class="category-card">
+        <h3>{{ category }}</h3>
+        <p>Explore our {{ category }} collection</p>
+        <a href="{{ url_for('products', category=category) }}" class="category-link" data-category="{{ category }}">View Products</a>
+    </div>
+    {% endfor %}
+</div>
 
+<!-- Featured Products Section -->
 <div class="featured-section">
-    <h2>Products</h2>
+    <h2>Featured Products</h2>
     <div class="products-container">
-        <div class="product-card" data-id="1" data-type="product">
-            <img src="{{ url_for('static', filename='images/products/birthday_card.jpg') }}" alt="Birthday Card">
-            <h3>Birthday Card</h3>
-            <p class="price">$0.99</p>
-            <p class="description">A beautiful birthday card for your loved ones</p>
+        {% for product in products %}
+        <div class="product-card" data-id="{{ product.id }}" data-type="product">
+            <img src="{{ url_for('static', filename='images/products/' + product.image) }}" alt="{{ product.name }}">
+            <h3>{{ product.name }}</h3>
+            <p class="price">${{ product.price }}</p>
+            <p class="description">{{ product.description }}</p>
             <button class="add-to-cart">Add to Cart</button>
         </div>
-        <div class="product-card" data-id="2" data-type="product">
-            <img src="{{ url_for('static', filename='images/products/chocolate_box.jpg') }}" alt="Chocolate Box">
-            <h3>Chocolate Box</h3>
-            <p class="price">$0.99</p>
-            <p class="description">Premium assorted chocolates</p>
-            <button class="add-to-cart">Add to Cart</button>
-        </div>
-        <div class="product-card" data-id="3" data-type="product">
-            <img src="{{ url_for('static', filename='images/products/teddy_bear.jpg') }}" alt="Teddy Bear">
-            <h3>Teddy Bear</h3>
-            <p class="price">$0.99</p>
-            <p class="description">Soft plush teddy bear</p>
-            <button class="add-to-cart">Add to Cart</button>
-        </div>
+        {% endfor %}
     </div>
 
-<!-- Combos Data -->
-
+    <!-- Gift Combos Section -->
     <h2>Gift Combos</h2>
     <div class="combos-container">
-        <div class="product-card" data-id="1" data-type="combo">
-            <img src="{{ url_for('static', filename='images/products/birthday_combo.jpg') }}" alt="Birthday Special">
-            <h3>Birthday Special</h3>
-            <p class="price">$1.99</p>
-            <p class="description">Perfect birthday gift combo</p>
+        {% for combo in combos %}
+        <div class="product-card" data-id="{{ combo.id }}" data-type="combo">
+            <img src="{{ url_for('static', filename='images/products/' + combo.image) }}" alt="{{ combo.name }}">
+            <h3>{{ combo.name }}</h3>
+            <p class="price">${{ combo.price }}</p>
+            <div class="combo-details">
+                <p>Includes: {{ combo.products|join(', ') }}</p>
+            </div>
+            <p class="description">{{ combo.description }}</p>
             <button class="add-to-cart">Add to Cart</button>
         </div>
-        <div class="product-card" data-id="2" data-type="combo">
-            <img src="{{ url_for('static', filename='images/products/anniversary_combo.jpg') }}" alt="Anniversary Delight">
-            <h3>Anniversary Delight</h3>
-            <p class="price">$1.99</p>
-            <p class="description">Romantic anniversary combo</p>
-            <button class="add-to-cart">Add to Cart</button>
-        </div>
+        {% endfor %}
     </div>
 </div>
 
 <!-- Chat Bot -->
-
-
 <div class="chatbot-section">
     <h2>Gift Advisor</h2>
     <div class="chatbot-container">
@@ -76,10 +69,8 @@
             <button id="sendButton">Send</button>
         </div>
     </div>
-    <div class="recommendations-container" id="recommendations">
-
+    <div class="recommendations-container" id="recommendations" style="display: none;">
         <!-- Recommended products will appear here -->
-
     </div>
 </div>
 {% endblock %}

@@ -23,7 +23,7 @@
                 </ul>
             </nav>
             <div class="cart-icon">
-                <span class="cart-count">0</span>
+                <span class="cart-count">{{ cart_count|default(0) }}</span>
                 <button id="cartButton"onclick="window.location.href='{{ url_for('cart') }}'">View Cart</button>
             </div>
         </div>
