@@ -1,14 +1,15 @@
 import os
-import json
 import openpyxl
 from pathlib import Path
-from flask import current_app
 
 class ProductService:
     def __init__(self, excel_path=None):
         self.products = []
         self.categories = []
         self.combos = []
+        
+        # Thư mục chứa ảnh sản phẩm
+        self.images_folder = 'app/static/images/products'
         
         if excel_path and os.path.exists(excel_path):
             self.load_from_excel(excel_path)
@@ -21,11 +22,6 @@ class ProductService:
             wb = openpyxl.load_workbook(excel_path, data_only=True)
             sheet = wb["Structured Data "]
             
-            # Extract header row
-            headers = []
-            for cell in sheet[1]:
-                headers.append(cell.value)
-            
             # Process product data
             unique_products = {}
             categories = set()
@@ -34,21 +30,32 @@ class ProductService:
                 if len(row) < 7 or not all([row[4], row[5], row[6]]):  # Check for required fields
                     continue
                 
+                # Extract data from row
+                name = row[4].strip() if row[4] else ""
+                category = row[5].strip() if row[5] else ""
+                
+                # Format price to 2 decimal places
+                raw_price = row[6]
+                price = float(raw_price) if raw_price else 0.0
+                price = round(price, 2)  # Round to 2 decimal places
+                
+                # Generate image filename from product name
+                image_filename = self._generate_image_filename(name)
+                
                 # Create product object
                 product = {
                     "id": len(unique_products) + 1,
-                    "name": row[4].strip() if row[4] else "",
-                    "category": row[5].strip() if row[5] else "",
-                    "price": float(row[6]) if row[6] else 0.0,
-                    "description": f"{row[5]} gift, perfect for ages {row[1]}-{row[1]+2}",
-                    "image": self._generate_image_filename(row[4])
+                    "name": name,
+                    "category": category,
+                    "price": price,  # Rounded price
+                    "description": f"High-quality {category} item, perfect for various occasions",
+                    "image": image_filename
                 }
                 
                 # Only add unique products
-                product_name = product["name"]
-                if product_name and product_name not in unique_products:
-                    unique_products[product_name] = product
-                    categories.add(product["category"])
+                if name and name not in unique_products:
+                    unique_products[name] = product
+                    categories.add(category)
             
             # Convert to lists
             self.products = list(unique_products.values())
@@ -57,6 +64,9 @@ class ProductService:
             # Create gift combos
             self.create_gift_combos()
             
+            # Generate list of needed images
+            self._generate_needed_images_list()
+            
         except Exception as e:
             print(f"Error loading Excel data: {e}")
             self.load_sample_data()
@@ -64,11 +74,39 @@ class ProductService:
     def _generate_image_filename(self, product_name):
         """Generate image filename from product name"""
         if not product_name:
-            return "default.jpg"
+            return "placeholder.jpg"
         
-        filename = product_name.lower().replace(" ", "_")
-        filename = ''.join(c for c in filename if c.isalnum() or c == '_')
-        return f"{filename}.jpg"
+        # Clean the name and convert to lowercase
+        clean_name = product_name.lower()
+        # Replace spaces with underscores
+        clean_name = clean_name.replace(' ', '_')
+        # Remove any special characters except underscores
+        clean_name = ''.join(c for c in clean_name if c.isalnum() or c == '_')
+        
+        # Add jpg extension
+        return f"{clean_name}.jpg"
+    
+    def _generate_needed_images_list(self):
+        """Generate a list of image filenames needed for all products"""
+        needed_images = []
+        
+        for product in self.products:
+            needed_images.append(product["image"])
+        
+        # Also add combo images
+        for combo in self.combos:
+            needed_images.append(combo["image"])
+        
+        # Remove duplicates
+        needed_images = list(set(needed_images))
+        
+        # Print the list for reference
+        print(f"\nNeeded images for products ({len(needed_images)}):")
+        for image in sorted(needed_images):
+            # Check if image exists
+            image_path = os.path.join(self.images_folder, image)
+            status = "✓" if os.path.exists(image_path) else "✗"
+            print(f"{status} {image}")
     
     def create_gift_combos(self):
         """Create gift combo packages from products"""
@@ -86,7 +124,10 @@ class ProductService:
                 
                 # Calculate combo price (10% discount)
                 base_price = sum(p["price"] for p in combo_products)
-                discount_price = round(base_price * 0.9, 2)
+                discount_price = round(base_price * 0.9, 2)  # Round to 2 decimal places
+                
+                # Generate combo image name
+                combo_image = f"{category.lower().replace(' ', '_').replace('&', 'and')}_combo.jpg"
                 
                 # Create combo
                 self.combos.append({
@@ -94,7 +135,7 @@ class ProductService:
                     "name": f"{category} Gift Set",
                     "price": discount_price,
                     "description": f"A special collection of {category} items",
-                    "image": f"{category.lower().replace(' ', '_')}_combo.jpg",
+                    "image": combo_image,
                     "products": [p["name"] for p in combo_products],
                     "category": category
                 })
@@ -110,7 +151,7 @@ class ProductService:
                 "price": 4.99,
                 "description": "A beautiful birthday card for your loved ones",
                 "image": "birthday_card.jpg",
-                "category": "Cards"
+                "category": "Arts & Crafts"
             },
             {
                 "id": 2,
@@ -133,12 +174,12 @@ class ProductService:
                 "name": "Wine Bottle",
                 "price": 24.99,
                 "description": "Red wine bottle, vintage 2018",
-                "image": "wine.jpg",
-                "category": "Drinks"
+                "image": "wine_bottle.jpg",
+                "category": "Food"
             }
         ]
         
-        self.categories = ["Cards", "Food", "Toys", "Drinks"]
+        self.categories = ["Arts & Crafts", "Food", "Toys"]
         
         self.combos = [
             {
@@ -160,6 +201,9 @@ class ProductService:
                 "category": "Anniversary"
             }
         ]
+        
+        # Generate list of needed images
+        self._generate_needed_images_list()
     
     def get_all_products(self):
         """Return all products"""

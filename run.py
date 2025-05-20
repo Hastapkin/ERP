@@ -10,7 +10,7 @@ app = Flask(__name__,
 app.secret_key = 'gift_shop_secret_key'
 
 # Initialize services
-from app.services import product_service, cart_service, chatbot_service
+from app.services import product_service, cart_service, enhanced_chatbot_service
 
 # Load product data from Excel if it exists
 excel_path = Path(os.path.join(os.path.dirname(__file__), 'Gift_Store_Data.xlsx'))
@@ -159,10 +159,30 @@ def chatbot():
     data = request.json
     query = data.get('query', '')
     
-    # Process query and get recommendations
-    result = chatbot_service.process_query(query)
+    # Get user ID from session (or use a default)
+    user_id = session.get('user_id', 'anonymous')
+    
+    # Process query with enhanced chatbot
+    result = enhanced_chatbot_service.process_query(query, user_id)
     
     return jsonify(result)
+
+# New endpoint for chatbot analytics (optional - for admin)
+@app.route('/api/chatbot/analytics')
+def chatbot_analytics():
+    """Get chatbot analytics summary"""
+    summary = enhanced_chatbot_service.get_analytics_summary()
+    return jsonify(summary)
+
+# New endpoint to reset conversation context
+@app.route('/api/chatbot/reset', methods=['POST'])
+def reset_chatbot():
+    """Reset chatbot conversation context for current user"""
+    user_id = session.get('user_id', 'anonymous')
+    if user_id in enhanced_chatbot_service.conversation_context:
+        del enhanced_chatbot_service.conversation_context[user_id]
+    
+    return jsonify({'success': True, 'message': 'Conversation reset successfully'})
 
 if __name__ == '__main__':
     app.run(debug=True)
