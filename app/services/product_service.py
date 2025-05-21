@@ -1,6 +1,7 @@
 import os
 import openpyxl
 from pathlib import Path
+import random
 
 class ProductService:
     def __init__(self, excel_path=None):
@@ -66,6 +67,8 @@ class ProductService:
             
             # Generate list of needed images
             self._generate_needed_images_list()
+            
+            print(f"Loaded {len(self.products)} products from Excel")
             
         except Exception as e:
             print(f"Error loading Excel data: {e}")
@@ -143,67 +146,12 @@ class ProductService:
                 combo_id += 1
     
     def load_sample_data(self):
-        """Load sample product data if Excel file is not available"""
-        self.products = [
-            {
-                "id": 1,
-                "name": "Birthday Card",
-                "price": 4.99,
-                "description": "A beautiful birthday card for your loved ones",
-                "image": "birthday_card.jpg",
-                "category": "Arts & Crafts"
-            },
-            {
-                "id": 2,
-                "name": "Chocolate Box",
-                "price": 14.99,
-                "description": "Premium assorted chocolates",
-                "image": "chocolate_box.jpg",
-                "category": "Food"
-            },
-            {
-                "id": 3,
-                "name": "Teddy Bear",
-                "price": 19.99,
-                "description": "Soft plush teddy bear",
-                "image": "teddy_bear.jpg",
-                "category": "Toys"
-            },
-            {
-                "id": 4,
-                "name": "Wine Bottle",
-                "price": 24.99,
-                "description": "Red wine bottle, vintage 2018",
-                "image": "wine_bottle.jpg",
-                "category": "Food"
-            }
-        ]
+        """Load minimal sample data if Excel file is not available"""
+        self.products = []
+        self.categories = []
+        self.combos = []
         
-        self.categories = ["Arts & Crafts", "Food", "Toys"]
-        
-        self.combos = [
-            {
-                "id": 1,
-                "name": "Birthday Special",
-                "price": 29.99,
-                "description": "Perfect birthday gift combo for your loved ones",
-                "image": "birthday_combo.jpg",
-                "products": ["Birthday Card", "Chocolate Box", "Teddy Bear"],
-                "category": "Birthday"
-            },
-            {
-                "id": 2,
-                "name": "Anniversary Delight",
-                "price": 39.99,
-                "description": "Romantic anniversary combo for special celebrations",
-                "image": "anniversary_combo.jpg",
-                "products": ["Chocolate Box", "Wine Bottle"],
-                "category": "Anniversary"
-            }
-        ]
-        
-        # Generate list of needed images
-        self._generate_needed_images_list()
+        print("No Excel data found. Using empty product catalog.")
     
     def get_all_products(self):
         """Return all products"""

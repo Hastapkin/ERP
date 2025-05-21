@@ -1,5 +1,3 @@
-from .product_service import product_service
-
 class ChatbotService:
     def __init__(self):
         self.occasions = ["birthday", "anniversary", "graduation", "wedding", "holiday", "christmas", 
@@ -19,14 +17,23 @@ class ChatbotService:
                 "recommendations": []
             }
         
+        # Import product_service here to avoid circular imports
+        from app.services.product_service import product_service
+        
         # Identify key information from query
         occasion = self._detect_occasion(query)
         age_group = self._detect_age_group(query)
         relation = self._detect_relation(query)
-        category = self._detect_category(query)
+        category = self._detect_category(query, product_service.get_all_categories())
         
         # Generate recommendations based on extracted information
-        recommendations = self._generate_recommendations(occasion, age_group, relation, category)
+        recommendations = self._generate_recommendations(
+            occasion, 
+            age_group, 
+            relation, 
+            category, 
+            product_service
+        )
         
         # Generate response text
         response = self._generate_response(occasion, age_group, relation, category, recommendations)
@@ -72,15 +79,14 @@ class ChatbotService:
                 return relation
         return None
     
-    def _detect_category(self, query):
+    def _detect_category(self, query, categories):
         """Detect product category from query"""
-        categories = product_service.get_all_categories()
         for category in categories:
             if category.lower() in query.lower():
                 return category
         return None
     
-    def _generate_recommendations(self, occasion, age_group, relation, category, limit=3):
+    def _generate_recommendations(self, occasion, age_group, relation, category, product_service, limit=3):
         """Generate product recommendations based on detected parameters"""
         products = product_service.get_all_products()
         combos = product_service.get_all_combos()

@@ -1,6 +1,10 @@
 from flask import Flask, render_template, request, jsonify, session
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 app = Flask(__name__, 
            static_folder='app/static',
@@ -9,8 +13,20 @@ app = Flask(__name__,
 # Set secret key for session management
 app.secret_key = 'gift_shop_secret_key'
 
-# Initialize services
-from app.services import product_service, cart_service, enhanced_chatbot_service
+# Import services directly to avoid circular dependencies
+from app.services.product_service import product_service
+from app.services.cart_service import cart_service
+
+# Try to import gemini chatbot only if needed
+try:
+    from app.services.gemini_chatbot_service import gemini_chatbot_service
+    if gemini_chatbot_service is not None:
+        print("✅ Gemini chatbot service loaded successfully")
+    else:
+        print("❌ Gemini chatbot service was imported but is None - will use basic chatbot")
+except ImportError:
+    gemini_chatbot_service = None
+    print("❌ Gemini chatbot service not available.")
 
 # Load product data from Excel if it exists
 excel_path = Path(os.path.join(os.path.dirname(__file__), 'Gift_Store_Data.xlsx'))
@@ -162,27 +178,65 @@ def chatbot():
     # Get user ID from session (or use a default)
     user_id = session.get('user_id', 'anonymous')
     
-    # Process query with enhanced chatbot
-    result = enhanced_chatbot_service.process_query(query, user_id)
+    try:
+        # Check if Gemini service exists
+        if gemini_chatbot_service is None:
+            raise ValueError("Chatbot service is not available")
+        
+        # Process the query using Gemini
+        result = gemini_chatbot_service.process_query(query, user_id)
+        return jsonify(result)
     
-    return jsonify(result)
+    except Exception as e:
+        print(f"Error in chatbot: {e}")
+        
+        # Try to get popular products for recommendations
+        try:
+            recommendations = [
+                {
+                    "id": product["id"],
+                    "name": product["name"],
+                    "price": product["price"],
+                    "image": product["image"],
+                    "description": product["description"],
+                    "type": "product",
+                    "relevance_scores": {"suggestion": "Popular item"}
+                }
+                for product in product_service.get_all_products()[:3]
+            ]
+        except:
+            recommendations = []
+            
+        error_response = {
+            "response": "I'm sorry, our AI chatbot is currently unavailable. Please try again later or browse our product categories for gift ideas.",
+            "recommendations": recommendations
+        }
+        return jsonify(error_response)
 
-# New endpoint for chatbot analytics (optional - for admin)
-@app.route('/api/chatbot/analytics')
-def chatbot_analytics():
-    """Get chatbot analytics summary"""
-    summary = enhanced_chatbot_service.get_analytics_summary()
-    return jsonify(summary)
-
-# New endpoint to reset conversation context
 @app.route('/api/chatbot/reset', methods=['POST'])
 def reset_chatbot():
     """Reset chatbot conversation context for current user"""
     user_id = session.get('user_id', 'anonymous')
-    if user_id in enhanced_chatbot_service.conversation_context:
-        del enhanced_chatbot_service.conversation_context[user_id]
     
-    return jsonify({'success': True, 'message': 'Conversation reset successfully'})
+    try:
+        if gemini_chatbot_service is None:
+            raise ValueError("Chatbot service is not available")
+            
+        result = gemini_chatbot_service.reset_conversation(user_id)
+        return jsonify(result)
+    except Exception as e:
+        print(f"Error resetting chatbot conversation: {e}")
+        return jsonify({"success": False, "message": "Failed to reset conversation"})
 
 if __name__ == '__main__':
+    # Check if Gemini API key is set
+    if gemini_chatbot_service is None:
+        print("\n⚠️ WARNING: Gemini chatbot service not available.")
+        print("Please check your installation and API key.\n")
+    elif not os.environ.get("GEMINI_API_KEY"):
+        print("\n⚠️ WARNING: GEMINI_API_KEY environment variable not set.")
+        print("The Gemini chatbot will not function correctly. Please set the API key in a .env file.\n")
+    else:
+        print("\n✅ Gemini API key found. Chatbot is ready to use.\n")
+    
     app.run(debug=True)

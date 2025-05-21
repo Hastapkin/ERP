@@ -1,5 +1,4 @@
 from flask import session
-from .product_service import product_service
 
 class CartService:
     def __init__(self):
@@ -14,6 +13,9 @@ class CartService:
         """Get current cart with product details"""
         self._ensure_cart_exists()
         cart = session[self.session_key]
+        
+        # Import here to avoid circular import
+        from app.services.product_service import product_service
         
         # Populate with full product details
         cart_items = []
@@ -44,6 +46,9 @@ class CartService:
         """Add item to cart or increase quantity if already exists"""
         self._ensure_cart_exists()
         cart = session[self.session_key]
+        
+        # Import here to avoid circular import
+        from app.services.product_service import product_service
         
         # Check if product/combo exists
         product = None

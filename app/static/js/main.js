@@ -1,5 +1,7 @@
 // Enhanced cart and chatbot functionality
 document.addEventListener('DOMContentLoaded', function() {
+    console.log("DOM fully loaded, initializing application...");
+    
     // Initialize chatbot state
     window.chatbotState = {
         isTyping: false,
@@ -21,10 +23,15 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Filter functionality
     initializeFilters();
+    
+    // Log initialization success
+    console.log("Application initialized successfully");
 });
 
 // Cart Functions
 function initializeCartFunctionality() {
+    console.log("Initializing cart functionality...");
+    
     // Add to cart buttons
     const addToCartButtons = document.querySelectorAll('.add-to-cart');
     addToCartButtons.forEach(button => {
@@ -89,39 +96,61 @@ function initializeCartFunctionality() {
             removeFromCart(cartItem);
         });
     });
+    
+    console.log("Cart functionality initialized");
 }
 
 // Chatbot Functions
 function initializeChatbot() {
+    console.log("Initializing chatbot...");
+    
     const chatInput = document.getElementById('chatInput');
     const sendButton = document.getElementById('sendButton');
     const chatMessages = document.getElementById('chatMessages');
     const recommendationsContainer = document.getElementById('recommendations');
     
-    if (sendButton && chatInput) {
-        // Add event listeners
-        sendButton.addEventListener('click', function() {
-            sendChatMessage();
+    if (!chatInput || !sendButton || !chatMessages) {
+        console.error("Critical chatbot elements missing from the DOM!");
+        console.log({
+            chatInput: chatInput ? "Found" : "Missing",
+            sendButton: sendButton ? "Found" : "Missing",
+            chatMessages: chatMessages ? "Found" : "Missing"
         });
-        
-        chatInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendChatMessage();
-            }
-        });
-        
-        // Add input suggestions
-        addInputSuggestions();
-        
-        // Add reset button
-        addResetButton();
+        return;
     }
+    
+    console.log("All required chatbot elements found in DOM");
+    
+    // Add event listeners
+    sendButton.addEventListener('click', function() {
+        console.log("Send button clicked");
+        sendChatMessage();
+    });
+    
+    chatInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            console.log("Enter key pressed in chat input");
+            e.preventDefault();
+            sendChatMessage();
+        }
+    });
+    
+    // Add input suggestions
+    addInputSuggestions();
+    
+    // Add reset button
+    addResetButton();
+    
+    console.log("Chatbot initialized successfully");
 }
 
 function addInputSuggestions() {
+    console.log("Adding input suggestions...");
     const chatInput = document.getElementById('chatInput');
-    if (!chatInput || window.chatbotState.conversationStarted) return;
+    if (!chatInput || window.chatbotState.conversationStarted) {
+        console.log("Skipping suggestions: input not found or conversation already started");
+        return;
+    }
     
     const suggestionsContainer = document.createElement('div');
     suggestionsContainer.className = 'chat-suggestions';
@@ -171,11 +200,16 @@ function addInputSuggestions() {
     });
     
     chatInput.parentNode.insertBefore(suggestionsContainer, chatInput.nextSibling);
+    console.log("Chat suggestions added");
 }
 
 function addResetButton() {
+    console.log("Adding reset button...");
     const chatMessages = document.getElementById('chatMessages');
-    if (!chatMessages) return;
+    if (!chatMessages) {
+        console.error("Cannot add reset button: chat messages container not found");
+        return;
+    }
     
     const resetButton = document.createElement('button');
     resetButton.className = 'chat-reset-btn';
@@ -196,6 +230,7 @@ function addResetButton() {
     `;
     
     resetButton.addEventListener('click', function() {
+        console.log("Reset button clicked");
         resetConversation();
     });
     
@@ -210,17 +245,30 @@ function addResetButton() {
     // Make chat messages container relative positioned
     chatMessages.style.position = 'relative';
     chatMessages.appendChild(resetButton);
+    console.log("Reset button added");
 }
 
 function resetConversation() {
+    console.log("Resetting conversation...");
     const chatMessages = document.getElementById('chatMessages');
     const recommendationsContainer = document.getElementById('recommendations');
+    
+    if (!chatMessages) {
+        console.error("Cannot reset conversation: chat messages container not found");
+        return;
+    }
     
     // Clear chat messages except welcome message
     const welcomeMessage = chatMessages.querySelector('.bot-message');
     chatMessages.innerHTML = '';
     if (welcomeMessage) {
         chatMessages.appendChild(welcomeMessage);
+    } else {
+        // If welcome message was removed, add a new one
+        const newWelcome = document.createElement('div');
+        newWelcome.className = 'bot-message';
+        newWelcome.innerHTML = '<p>Hello! I can help you find the perfect gift. What occasion are you shopping for?</p>';
+        chatMessages.appendChild(newWelcome);
     }
     
     // Clear recommendations
@@ -231,6 +279,7 @@ function resetConversation() {
     
     // Reset chatbot state
     window.chatbotState.conversationStarted = false;
+    window.chatbotState.isTyping = false;
     
     // Call API to reset server-side context
     fetch('/api/chatbot/reset', {
@@ -245,22 +294,36 @@ function resetConversation() {
           setTimeout(() => {
               addInputSuggestions();
           }, 100);
+      })
+      .catch(error => {
+          console.error("Error resetting conversation:", error);
+          showNotification("Error resetting conversation", "error");
       });
     
     // Re-add reset button
     addResetButton();
+    console.log("Conversation reset complete");
 }
 
 function sendChatMessage() {
+    console.log("sendChatMessage called");
     const chatInput = document.getElementById('chatInput');
     const message = chatInput.value.trim();
     
-    if (message === '' || window.chatbotState.isTyping) return;
+    console.log(`Message: "${message}", isTyping: ${window.chatbotState.isTyping}`);
+    
+    if (message === '' || window.chatbotState.isTyping) {
+        console.log("Empty message or already typing, returning");
+        return;
+    }
     
     // Remove suggestions after first message
     if (!window.chatbotState.conversationStarted) {
         const suggestions = document.querySelector('.chat-suggestions');
-        if (suggestions) suggestions.remove();
+        if (suggestions) {
+            console.log("Removing suggestions");
+            suggestions.remove();
+        }
         window.chatbotState.conversationStarted = true;
     }
     
@@ -274,7 +337,15 @@ function sendChatMessage() {
     addTypingIndicator();
     window.chatbotState.isTyping = true;
     
+    // Create abort controller for timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => {
+        controller.abort();
+        console.log("Request timed out");
+    }, 30000);
+    
     // Send to API
+    console.log("Sending request to /api/chatbot");
     fetch('/api/chatbot', {
         method: 'POST',
         headers: {
@@ -283,9 +354,20 @@ function sendChatMessage() {
         body: JSON.stringify({
             query: message
         }),
+        signal: controller.signal
     })
-    .then(response => response.json())
+    .then(response => {
+        clearTimeout(timeoutId);
+        console.log(`Response status: ${response.status}`);
+        
+        if (!response.ok) {
+            throw new Error(`Server error: ${response.status}`);
+        }
+        return response.json();
+    })
     .then(data => {
+        console.log("Response received:", data);
+        
         // Remove typing indicator
         removeTypingIndicator();
         window.chatbotState.isTyping = false;
@@ -296,21 +378,28 @@ function sendChatMessage() {
             
             // Show recommendations if any
             if (data.recommendations && data.recommendations.length > 0) {
+                console.log(`Showing ${data.recommendations.length} recommendations`);
                 setTimeout(() => {
                     showRecommendations(data.recommendations);
                 }, 500);
+            } else {
+                console.log("No recommendations to show");
             }
         }, 500);
     })
     .catch(error => {
+        clearTimeout(timeoutId);
         console.error('Error sending message:', error);
         removeTypingIndicator();
         window.chatbotState.isTyping = false;
+        
         addBotMessage('Sorry, I couldn\'t process your request at the moment. Please try again.');
+        showNotification('Gift advisor service unavailable. Please try again later.', 'error', 6000);
     });
 }
 
 function addTypingIndicator() {
+    console.log("Adding typing indicator");
     const chatMessages = document.getElementById('chatMessages');
     
     if (chatMessages) {
@@ -367,6 +456,7 @@ function addTypingIndicator() {
 }
 
 function removeTypingIndicator() {
+    console.log("Removing typing indicator");
     const typingIndicator = document.querySelector('.typing-indicator');
     if (typingIndicator) {
         typingIndicator.remove();
@@ -374,6 +464,7 @@ function removeTypingIndicator() {
 }
 
 function addUserMessage(message) {
+    console.log("Adding user message");
     const chatMessages = document.getElementById('chatMessages');
     
     if (chatMessages) {
@@ -408,6 +499,7 @@ function addUserMessage(message) {
 }
 
 function addBotMessage(message) {
+    console.log("Adding bot message");
     const chatMessages = document.getElementById('chatMessages');
     
     if (chatMessages) {
@@ -440,153 +532,250 @@ function addBotMessage(message) {
     }
 }
 
+// Enhanced recommendation display
 function showRecommendations(recommendations) {
+    console.log("Showing recommendations");
     const container = document.getElementById('recommendations');
     
-    if (container) {
-        // Clear previous recommendations
-        container.innerHTML = '';
+    if (!container) {
+        console.error("Recommendations container not found");
+        return;
+    }
+    
+    // Clear previous recommendations
+    container.innerHTML = '';
+    
+    if (!recommendations || recommendations.length === 0) {
+        console.log("No recommendations to display");
+        container.style.display = 'none';
+        return;
+    }
+    
+    // Add header
+    const header = document.createElement('h3');
+    header.textContent = 'Recommended for you';
+    header.style.cssText = `
+        margin: 0 0 15px 0;
+        color: #4a89dc;
+        font-size: 1.1em;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    `;
+    
+    // Add icon to header
+    header.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4a89dc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg> Recommended Just For You';
+    
+    container.appendChild(header);
+    
+    // Create recommendations grid
+    const recommendationsGrid = document.createElement('div');
+    recommendationsGrid.className = 'recommendations-grid';
+    recommendationsGrid.style.cssText = `
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+        margin-top: 15px;
+    `;
+    
+    // Add slideUp animation CSS if not exists
+    if (!document.getElementById('slide-animation')) {
+        const slideStyle = document.createElement('style');
+        slideStyle.id = 'slide-animation';
+        slideStyle.textContent = `
+            @keyframes slideUp {
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            .recommendation-item:hover {
+                transform: translateY(-8px);
+                box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+                border-color: #4a89dc;
+            }
+            .add-to-cart-rec:hover {
+                background: linear-gradient(135deg, #37b54a 0%, #28a745 100%);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(76, 217, 100, 0.4);
+            }
+            .relevance-tag {
+                display: inline-block;
+                padding: 3px 8px;
+                border-radius: 12px;
+                font-size: 0.7em;
+                font-weight: 600;
+                margin-right: 5px;
+                margin-bottom: 5px;
+                background: #f0f5ff;
+                color: #4a89dc;
+                border: 1px solid #d0e0ff;
+            }
+            .relevance-tags {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 5px;
+                margin-top: 8px;
+                margin-bottom: 8px;
+            }
+        `;
+        document.head.appendChild(slideStyle);
+    }
+    
+    // Add each recommendation
+    recommendations.forEach((item, index) => {
+        console.log(`Building recommendation ${index+1}: ${item.name}`);
         
-        if (recommendations.length === 0) {
-            container.style.display = 'none';
-            return;
+        const element = document.createElement('div');
+        element.className = 'recommendation-item';
+        element.style.cssText = `
+            background: white;
+            border: 1px solid #e6e6e6;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            animation: slideUp 0.5s ease forwards;
+            animation-delay: ${index * 0.1}s;
+            opacity: 0;
+            transform: translateY(20px);
+            position: relative;
+        `;
+        
+        // Start building HTML content
+        let itemHTML = `
+            <div class="rec-image" style="position: relative; overflow: hidden;">
+                <img src="/static/images/products/${item.image}" alt="${item.name}" 
+                     style="width: 100%; height: 180px; object-fit: cover; transition: transform 0.3s ease;"
+                     onerror="this.src='/static/images/products/placeholder.jpg'">
+                <div class="rec-type-badge" style="position: absolute; top: 12px; right: 12px; 
+                     background: ${item.type === 'combo' ? '#ff6b6b' : '#4cd964'}; 
+                     color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.8em;
+                     font-weight: 600; letter-spacing: 0.5px; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+                    ${item.type === 'combo' ? 'GIFT SET' : 'PRODUCT'}
+                </div>
+            </div>
+            <div class="rec-details" style="padding: 15px;">
+                <h4 style="margin: 0 0 8px 0; font-size: 1.1em; color: #333;">${item.name}</h4>
+                <p class="price" style="color: #ff6b6b; font-weight: bold; margin: 8px 0; font-size: 1.2em;">
+                    $${item.price.toFixed(2)}
+                </p>
+        `;
+        
+        // Add relevance tags if available
+        if (item.relevance_scores && Object.keys(item.relevance_scores).length > 0) {
+            itemHTML += `<div class="relevance-tags">`;
+            
+            for (const [key, value] of Object.entries(item.relevance_scores)) {
+                itemHTML += `<span class="relevance-tag">${value}</span>`;
+            }
+            
+            itemHTML += `</div>`;
         }
         
-        // Add header
-        const header = document.createElement('h3');
-        header.textContent = 'Recommended for you';
-        header.style.cssText = `
-            margin: 0 0 15px 0;
-            color: #4a89dc;
-            font-size: 1.1em;
+        // Add description and button
+        itemHTML += `
+                <p style="color: #666; font-size: 0.9em; margin: 10px 0; line-height: 1.5;">
+                    ${item.description}
+                </p>
+                <button class="add-to-cart-rec" data-id="${item.id}" data-type="${item.type}"
+                        style="width: 100%; padding: 12px; background: linear-gradient(135deg, #4cd964 0%, #37b54a 100%); color: white; 
+                               border: none; border-radius: 8px; font-weight: 600; cursor: pointer;
+                               transition: all 0.3s; margin-top: 15px; display: flex; justify-content: center; align-items: center; gap: 8px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="9" cy="21" r="1"></circle>
+                        <circle cx="20" cy="21" r="1"></circle>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    </svg>
+                    Add to Cart
+                </button>
+            </div>
         `;
-        container.appendChild(header);
         
-        // Create recommendations grid
-        const recommendationsGrid = document.createElement('div');
-        recommendationsGrid.className = 'recommendations-grid';
-        recommendationsGrid.style.cssText = `
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-        `;
-        
-        // Add slideUp animation CSS if not exists
-        if (!document.getElementById('slide-animation')) {
-            const slideStyle = document.createElement('style');
-            slideStyle.id = 'slide-animation';
-            slideStyle.textContent = `
-                @keyframes slideUp {
-                    to {
-                        opacity: 1;
-                        transform: translateY(0);
+        element.innerHTML = itemHTML;
+        recommendationsGrid.appendChild(element);
+    });
+    
+    container.appendChild(recommendationsGrid);
+    
+    // Add event listeners to the new buttons
+    const addButtons = container.querySelectorAll('.add-to-cart-rec');
+    addButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const itemId = parseInt(this.dataset.id);
+            const itemType = this.dataset.type;
+            
+            console.log(`Add to cart clicked: ${itemType} #${itemId}`);
+            
+            // Change button state
+            const originalText = this.innerHTML;
+            this.innerHTML = `
+                <svg class="spinner" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite;">
+                    <circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="16"></circle>
+                </svg>
+                Adding...
+            `;
+            this.disabled = true;
+            
+            // Add style for the spinner
+            if (!document.getElementById('spinner-style')) {
+                const spinnerStyle = document.createElement('style');
+                spinnerStyle.id = 'spinner-style';
+                spinnerStyle.textContent = `
+                    @keyframes spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
                     }
-                }
-                .recommendation-item:hover {
-                    transform: translateY(-5px);
-                    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
-                }
-                .add-to-cart-rec:hover {
-                    background: #37b54a !important;
-                    transform: translateY(-2px);
-                }
-            `;
-            document.head.appendChild(slideStyle);
-        }
-        
-        // Add each recommendation
-        recommendations.forEach((item, index) => {
-            const element = document.createElement('div');
-            element.className = 'recommendation-item';
-            element.style.cssText = `
-                background: white;
-                border: 1px solid #e6e6e6;
-                border-radius: 10px;
-                overflow: hidden;
-                transition: all 0.3s ease;
-                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-                animation: slideUp 0.5s ease forwards;
-                animation-delay: ${index * 0.1}s;
-                opacity: 0;
-                transform: translateY(20px);
-            `;
+                `;
+                document.head.appendChild(spinnerStyle);
+            }
             
-            element.innerHTML = `
-                <div class="rec-image" style="position: relative; overflow: hidden;">
-                    <img src="/static/images/products/${item.image}" alt="${item.name}" 
-                         style="width: 100%; height: 150px; object-fit: cover;">
-                    <div class="rec-type-badge" style="position: absolute; top: 10px; right: 10px; 
-                         background: ${item.type === 'combo' ? '#ff6b6b' : '#4cd964'}; 
-                         color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.8em;">
-                        ${item.type === 'combo' ? 'Combo' : 'Product'}
-                    </div>
-                </div>
-                <div class="rec-details" style="padding: 15px;">
-                    <h4 style="margin: 0 0 8px 0; font-size: 1em; color: #333;">${item.name}</h4>
-                    <p class="price" style="color: #ff6b6b; font-weight: bold; margin: 8px 0; font-size: 1.1em;">
-                        $${item.price.toFixed(2)}
-                    </p>
-                    <p style="color: #666; font-size: 0.9em; margin: 8px 0; line-height: 1.4;">
-                        ${item.description}
-                    </p>
-                    <button class="add-to-cart-rec" data-id="${item.id}" data-type="${item.type}"
-                            style="width: 100%; padding: 10px; background: #4cd964; color: white; 
-                                   border: none; border-radius: 6px; font-weight: 600; cursor: pointer;
-                                   transition: all 0.3s; margin-top: 10px;">
-                        Add to Cart
-                    </button>
-                </div>
-            `;
-            
-            recommendationsGrid.appendChild(element);
-        });
-        
-        container.appendChild(recommendationsGrid);
-        
-        // Add event listeners to the new buttons
-        const addButtons = container.querySelectorAll('.add-to-cart-rec');
-        addButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const itemId = parseInt(this.dataset.id);
-                const itemType = this.dataset.type;
+            addToCart(itemId, itemType).then(() => {
+                this.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    Added to Cart
+                `;
+                this.style.background = 'linear-gradient(135deg, #28a745 0%, #218838 100%)';
                 
-                // Change button state
-                const originalText = this.textContent;
-                this.textContent = 'Adding...';
-                this.disabled = true;
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                    this.style.background = 'linear-gradient(135deg, #4cd964 0%, #37b54a 100%)';
+                    this.disabled = false;
+                }, 2000);
+            }).catch((error) => {
+                console.error("Error adding to cart:", error);
+                this.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                    Error
+                `;
+                this.style.background = '#dc3545';
                 
-                addToCart(itemId, itemType).then(() => {
-                    this.textContent = 'Added ✓';
-                    this.style.background = '#28a745';
-                    
-                    setTimeout(() => {
-                        this.textContent = originalText;
-                        this.style.background = '#4cd964';
-                        this.disabled = false;
-                    }, 2000);
-                }).catch(() => {
-                    this.textContent = 'Error';
-                    this.style.background = '#dc3545';
-                    
-                    setTimeout(() => {
-                        this.textContent = originalText;
-                        this.style.background = '#4cd964';
-                        this.disabled = false;
-                    }, 2000);
-                });
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                    this.style.background = 'linear-gradient(135deg, #4cd964 0%, #37b54a 100%)';
+                    this.disabled = false;
+                }, 2000);
             });
         });
-        
-        // Show recommendations with animation
-        container.style.display = 'block';
-        setTimeout(() => {
-            container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }, 300);
-    }
+    });
+    
+    // Show recommendations with animation
+    container.style.display = 'block';
+    setTimeout(() => {
+        container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 300);
+    
+    console.log("Recommendations displayed successfully");
 }
 
 // Filter Functions
 function initializeFilters() {
+    console.log("Initializing filters...");
     const categoryLinks = document.querySelectorAll('.category-link');
     categoryLinks.forEach(link => {
         link.addEventListener('click', function(e) {
@@ -595,10 +784,12 @@ function initializeFilters() {
             window.location.href = `/products?category=${category}`;
         });
     });
+    console.log("Filters initialized");
 }
 
 // Cart API Functions
 function addToCart(productId, productType) {
+    console.log(`Adding to cart: ${productType} #${productId}`);
     return fetch('/api/cart/add', {
         method: 'POST',
         headers: {
@@ -610,7 +801,13 @@ function addToCart(productId, productType) {
             quantity: 1
         }),
     })
-    .then(response => response.json())
+    .then(response => {
+        console.log(`Add to cart response status: ${response.status}`);
+        if (!response.ok) {
+            throw new Error(`Server error: ${response.status}`);
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.success) {
             // Update cart count
@@ -632,6 +829,7 @@ function addToCart(productId, productType) {
 }
 
 function updateCartItem(cartItem, quantity) {
+    console.log(`Updating cart item quantity to ${quantity}`);
     const itemId = parseInt(cartItem.dataset.id);
     const itemType = cartItem.dataset.type;
     
@@ -646,7 +844,12 @@ function updateCartItem(cartItem, quantity) {
             quantity: quantity
         }),
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Server error: ${response.status}`);
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.success) {
             // Update subtotal
@@ -667,10 +870,12 @@ function updateCartItem(cartItem, quantity) {
     })
     .catch(error => {
         console.error('Error updating cart item:', error);
+        showNotification('Error updating cart', 'error');
     });
 }
 
 function removeFromCart(cartItem) {
+    console.log("Removing item from cart");
     const itemId = parseInt(cartItem.dataset.id);
     const itemType = cartItem.dataset.type;
     
@@ -684,7 +889,12 @@ function removeFromCart(cartItem) {
             type: itemType
         }),
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Server error: ${response.status}`);
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.success) {
             // Remove item from DOM
@@ -710,10 +920,12 @@ function removeFromCart(cartItem) {
     })
     .catch(error => {
         console.error('Error removing cart item:', error);
+        showNotification('Error removing item from cart', 'error');
     });
 }
 
 function updateCartCount(count) {
+    console.log(`Updating cart count to ${count}`);
     const cartCountElement = document.querySelector('.cart-count');
     if (cartCountElement) {
         cartCountElement.textContent = count;
@@ -728,6 +940,7 @@ function updateCartCount(count) {
 }
 
 function updateCartTotals(data) {
+    console.log("Updating cart totals");
     const subtotalElement = document.querySelector('.summary-row:nth-child(1) span:last-child');
     const shippingElement = document.querySelector('.summary-row:nth-child(2) span:last-child');
     const taxElement = document.querySelector('.summary-row:nth-child(3) span:last-child');
@@ -752,12 +965,15 @@ function updateCartTotals(data) {
 
 // Helper Functions
 function escapeHtml(text) {
+    if (!text) return '';
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
 }
 
-function showNotification(message, type = 'success') {
+function showNotification(message, type = 'success', duration = 4000) {
+    console.log(`Showing notification: ${message} (${type})`);
+    
     // Check if notification container exists
     let notificationContainer = document.getElementById('notification-container');
     
@@ -801,12 +1017,12 @@ function showNotification(message, type = 'success') {
         notification.style.opacity = '1';
     }, 10);
     
-    // Remove after 4 seconds
+    // Remove after specified duration
     setTimeout(() => {
         notification.style.transform = 'translateX(100%)';
         notification.style.opacity = '0';
         setTimeout(() => {
             notification.remove();
         }, 300);
-    }, 4000);
+    }, duration);
 }

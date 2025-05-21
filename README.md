@@ -3,6 +3,7 @@
 ```
 ERP_PROJECT/
 ├── .vscode/
+├── .env                            # NEW: Gemini API key configuration
 ├── ERP/
 │   ├── __pycache__/
 │   ├── app/
@@ -11,7 +12,10 @@ ERP_PROJECT/
 │   │   │   ├── __init__.py
 │   │   │   ├── cart_service.py
 │   │   │   ├── chatbot_service.py
-│   │   │   └── product_service.py
+│   │   │   ├── gemini_chatbot_service.py
+│   │   │   ├── context_analyzer.py
+│   │   │   ├── advanced_recommender.py
+│   │   │   └── product_service.py 
 │   │   ├── static/
 │   │   │   ├── css/
 │   │   │   │   └── style.css
@@ -30,8 +34,16 @@ ERP_PROJECT/
 │   │       └── products.html
 │   └── ...
 ├── venv/
-├── Gift_Store_Data...
+├── Gift_Store_Data.xlsx
 ├── README.md
 ├── requirements.txt
 └── run.py
+
 ```
+python -m venv venv
+
+venv\Scripts\activate
+
+pip install -r requirements.txt
+
+python run.py

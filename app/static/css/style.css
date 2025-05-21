@@ -1049,8 +1049,8 @@ footer {
 
 .suggestion-btn {
     padding: 8px 16px;
-    background: white;
-    border: 2px solid #e0e0e0;
+    background: #4a89dc;
+    border: 2px solid #4a89dc;
     border-radius: 20px;
     font-size: 0.85em;
     cursor: pointer;
@@ -1061,7 +1061,7 @@ footer {
 
 .suggestion-btn:hover {
     background: #4a89dc;
-    color: white;
+    color: #4a89dc;
     border-color: #4a89dc;
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(74, 137, 220, 0.3);
