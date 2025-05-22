@@ -5,7 +5,6 @@ class AdvancedRecommender:
         self.products = products or []
         self.categories = categories or []
         self.combos = combos or []
-        self.context_analyzer = ContextAnalyzer()
     
     def set_products(self, products, categories, combos):
         """Update product data"""
@@ -15,52 +14,89 @@ class AdvancedRecommender:
     
     def get_recommendations(self, query, conversation_history, limit=3):
         """Get personalized recommendations based on conversation context"""
-        # Analyze the latest query
-        query_analysis = self.context_analyzer.analyze_query(query)
+        try:
+            # Import locally to avoid circular import
+            from app.services.context_analyzer import ContextAnalyzer
+            context_analyzer = ContextAnalyzer()
+        except ImportError as e:
+            print(f"Failed to import ContextAnalyzer: {e}")
+            return self._get_basic_recommendations(limit)
         
-        # Analyze the entire conversation for context
-        context_analysis = self.context_analyzer.analyze_conversation(conversation_history)
+        try:
+            # Analyze the latest query
+            query_analysis = context_analyzer.analyze_query(query)
+            
+            # Analyze the entire conversation for context  
+            context_analysis = context_analyzer.analyze_conversation(conversation_history)
+            
+            # Combine analyses
+            combined_analysis = {**context_analysis, **query_analysis}
+            
+            # Score and rank products
+            scored_products = []
+            for product in self.products:
+                score = self._calculate_product_score(product, combined_analysis)
+                scored_products.append((product, score, 'product'))
+            
+            # Score and rank combos
+            for combo in self.combos:
+                score = self._calculate_combo_score(combo, combined_analysis)
+                scored_products.append((combo, score, 'combo'))
+            
+            # Sort by score
+            scored_products.sort(key=lambda x: x[1], reverse=True)
+            
+            # Ensure diverse recommendations
+            diverse_recommendations = self._ensure_diverse_recommendations(scored_products, limit)
+            
+            # Format recommendations for display
+            formatted_recommendations = []
+            for item, _, item_type in diverse_recommendations:
+                formatted_recommendations.append({
+                    "id": item["id"],
+                    "name": item["name"],
+                    "price": item["price"],
+                    "image": item["image"],
+                    "description": item["description"],
+                    "type": item_type,
+                    "relevance_scores": self._get_relevance_details(item, combined_analysis)
+                })
+            
+            return formatted_recommendations
+        except Exception as e:
+            print(f"Error in get_recommendations: {e}")
+            return self._get_basic_recommendations(limit)
+    
+    def _get_basic_recommendations(self, limit=3):
+        """Fallback method when context analyzer is not available"""
+        recommendations = []
         
-        # Combine analyses, with query analysis taking precedence for conflicts
-        combined_analysis = {**context_analysis, **query_analysis}
+        # Mix products and combos
+        all_items = []
+        for product in self.products[:limit]:
+            all_items.append((product, 'product'))
+        for combo in self.combos[:limit]:
+            all_items.append((combo, 'combo'))
         
-        # Score and rank each product
-        scored_products = []
-        for product in self.products:
-            score = self._calculate_product_score(product, combined_analysis)
-            scored_products.append((product, score, 'product'))
-        
-        # Score and rank each combo
-        for combo in self.combos:
-            score = self._calculate_combo_score(combo, combined_analysis)
-            scored_products.append((combo, score, 'combo'))
-        
-        # Sort by score (highest first)
-        scored_products.sort(key=lambda x: x[1], reverse=True)
-        
-        # Ensure diverse recommendations
-        diverse_recommendations = self._ensure_diverse_recommendations(scored_products, limit)
-        
-        # Format recommendations for display
-        formatted_recommendations = []
-        for item, _, item_type in diverse_recommendations:
-            formatted_recommendations.append({
+        # Take first few items
+        for item, item_type in all_items[:limit]:
+            recommendations.append({
                 "id": item["id"],
                 "name": item["name"],
                 "price": item["price"],
                 "image": item["image"],
                 "description": item["description"],
                 "type": item_type,
-                "relevance_scores": self._get_relevance_details(item, combined_analysis)
+                "relevance_scores": {"suggestion": "Popular item"}
             })
         
-        return formatted_recommendations
+        return recommendations
     
     def _calculate_product_score(self, product, analysis):
         """Calculate relevance score for a product based on user preferences"""
         score = 0.0
         
-        # Start with lower base score for products compared to combos
+        # Start with base score
         base_score = 1.0
         score += base_score
         
@@ -94,17 +130,6 @@ class AdvancedRecommender:
                 if self._is_product_suitable_for_relationship(product, relationship):
                     score += 1.0
         
-        # Keyword matching in product name and description
-        if 'keywords' in analysis:
-            name_words = set(product['name'].lower().split())
-            desc_words = set(product['description'].lower().split())
-            
-            for keyword in analysis['keywords']:
-                if keyword.lower() in name_words:
-                    score += 1.0
-                if keyword.lower() in desc_words:
-                    score += 0.5
-        
         return score
     
     def _calculate_combo_score(self, combo, analysis):
@@ -121,7 +146,6 @@ class AdvancedRecommender:
         # Budget match - combos are often more expensive
         if analysis.get('budget'):
             budget = analysis['budget']
-            # Adjust expectations - combos are good value but higher price
             if (budget == 'medium' and combo['price'] < 60) or (budget == 'high'):
                 score += 1.5
         
@@ -130,17 +154,6 @@ class AdvancedRecommender:
             for relationship in analysis['relationship']:
                 if self._is_combo_suitable_for_relationship(combo, relationship):
                     score += 1.5
-        
-        # Combos are generally good for special celebrations
-        if any(keyword in combo['name'].lower() for keyword in ['special', 'set', 'bundle', 'collection']):
-            score += 0.5
-        
-        # Check if the combo's products match interests
-        if analysis.get('interests') and 'products' in combo:
-            for product_name in combo['products']:
-                for interest in analysis['interests']:
-                    if interest.lower() in product_name.lower():
-                        score += 1.0
         
         return score
     
@@ -213,7 +226,6 @@ class AdvancedRecommender:
         
         return relevance
     
-    # Helper methods for matching
     def _is_category_related_to_interest(self, category, interest):
         """Check if a product category is related to a user interest"""
         category_to_interest_map = {
@@ -287,7 +299,6 @@ class AdvancedRecommender:
     
     def _is_combo_suitable_for_occasion(self, combo, occasion):
         """Check if a combo is suitable for an occasion"""
-        # Combos are generally good for special occasions
         occasion_keywords = {
             'birthday': ['birthday', 'celebration', 'special'],
             'christmas': ['christmas', 'holiday', 'festive'],
@@ -362,6 +373,3 @@ class AdvancedRecommender:
         }
         
         return occasion_formats.get(occasion, occasion.title())
-
-# Import this at the top of the file
-from app.services.context_analyzer import ContextAnalyzer

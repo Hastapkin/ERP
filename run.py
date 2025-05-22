@@ -23,16 +23,20 @@ try:
     if gemini_chatbot_service is not None:
         print("✅ Gemini chatbot service loaded successfully")
     else:
-        print("❌ Gemini chatbot service was imported but is None - will use basic chatbot")
-except ImportError:
+        print("❌ Gemini chatbot service was imported but is None - will use fallback")
+except ImportError as e:
     gemini_chatbot_service = None
-    print("❌ Gemini chatbot service not available.")
+    print(f"❌ Gemini chatbot service not available: {e}")
 
 # Load product data from Excel if it exists
 excel_path = Path(os.path.join(os.path.dirname(__file__), 'Gift_Store_Data.xlsx'))
 if excel_path.exists():
     product_service.load_from_excel(str(excel_path.absolute()))
+    print(f"✅ Loaded product data from Excel: {len(product_service.get_all_products())} products")
+else:
+    print("⚠️ Excel file not found, using sample data")
 
+# Routes
 @app.route('/')
 def index():
     # Get featured products and combos for homepage
@@ -188,30 +192,64 @@ def chatbot():
         return jsonify(result)
     
     except Exception as e:
-        print(f"Error in chatbot: {e}")
+        error_msg = str(e)
+        print(f"Error in chatbot: {error_msg}")
         
-        # Try to get popular products for recommendations
+        # Handle different types of errors with appropriate responses
+        if "API_RATE_LIMIT_EXCEEDED" in error_msg:
+            fallback_response = "I'm currently experiencing high demand. Please try again in a few minutes. Meanwhile, check out these popular products:"
+        elif "API_TIMEOUT" in error_msg:
+            fallback_response = "Connection is taking longer than expected. Let me suggest some popular products while we wait:"
+        elif "API_BAD_REQUEST" in error_msg:
+            fallback_response = "I'm having some technical difficulties understanding your request. Here are some products you might be interested in:"
+        elif "API_ERROR" in error_msg:
+            fallback_response = "I'm experiencing some technical issues. Here are some popular products from our catalog:"
+        elif "Failed to load product data" in error_msg:
+            fallback_response = "I'm having trouble accessing our product catalog right now. Please try again in a moment."
+        else:
+            fallback_response = "I'm sorry, I couldn't process your request at the moment. Here are some popular products you might like:"
+        
+        # Get popular products as fallback recommendations
         try:
-            recommendations = [
-                {
-                    "id": product["id"],
-                    "name": product["name"],
-                    "price": product["price"],
-                    "image": product["image"],
-                    "description": product["description"],
-                    "type": "product",
-                    "relevance_scores": {"suggestion": "Popular item"}
-                }
-                for product in product_service.get_all_products()[:3]
-            ]
-        except:
+            recommendations = []
+            all_products = product_service.get_all_products()
+            all_combos = product_service.get_all_combos()
+            
+            # Mix of products and combos for variety
+            if all_products:
+                for product in all_products[:2]:
+                    recommendations.append({
+                        "id": product["id"],
+                        "name": product["name"],
+                        "price": product["price"],
+                        "image": product["image"],
+                        "description": product["description"],
+                        "type": "product",
+                        "relevance_scores": {"suggestion": "Popular item"}
+                    })
+            
+            if all_combos:
+                for combo in all_combos[:1]:
+                    recommendations.append({
+                        "id": combo["id"],
+                        "name": combo["name"],
+                        "price": combo["price"],
+                        "image": combo["image"],
+                        "description": combo["description"],
+                        "type": "combo",
+                        "relevance_scores": {"suggestion": "Gift bundle"}
+                    })
+                    
+        except Exception as fallback_error:
+            print(f"Error getting fallback recommendations: {fallback_error}")
             recommendations = []
             
-        error_response = {
-            "response": "I'm sorry, our AI chatbot is currently unavailable. Please try again later or browse our product categories for gift ideas.",
-            "recommendations": recommendations
-        }
-        return jsonify(error_response)
+        return jsonify({
+            "response": fallback_response,
+            "recommendations": recommendations,
+            "fallback": True,
+            "error_type": "service_unavailable"
+        })
 
 @app.route('/api/chatbot/reset', methods=['POST'])
 def reset_chatbot():
@@ -226,17 +264,72 @@ def reset_chatbot():
         return jsonify(result)
     except Exception as e:
         print(f"Error resetting chatbot conversation: {e}")
-        return jsonify({"success": False, "message": "Failed to reset conversation"})
+        return jsonify({
+            "success": False, 
+            "message": "Failed to reset conversation",
+            "error": str(e)
+        })
+
+# Health check endpoint
+@app.route('/api/health', methods=['GET'])
+def health_check():
+    """Health check endpoint to verify service status"""
+    health_status = {
+        "status": "healthy",
+        "services": {
+            "product_service": True,
+            "cart_service": True,
+            "gemini_chatbot": gemini_chatbot_service is not None
+        },
+        "product_count": len(product_service.get_all_products()),
+        "category_count": len(product_service.get_all_categories()),
+        "combo_count": len(product_service.get_all_combos())
+    }
+    
+    return jsonify(health_status)
+
+# Error handlers
+@app.errorhandler(404)
+def not_found_error(error):
+    return render_template('404.html'), 404
+
+@app.errorhandler(500)
+def internal_error(error):
+    return render_template('500.html'), 500
+
+# Initialize session for anonymous users
+@app.before_request
+def before_request():
+    if 'user_id' not in session:
+        import uuid
+        session['user_id'] = str(uuid.uuid4())
 
 if __name__ == '__main__':
+    print("\n" + "="*50)
+    print("🚀 GIFT SHOP APPLICATION STARTING")
+    print("="*50)
+    
     # Check if Gemini API key is set
     if gemini_chatbot_service is None:
         print("\n⚠️ WARNING: Gemini chatbot service not available.")
-        print("Please check your installation and API key.\n")
+        print("The application will run with limited chatbot functionality.")
     elif not os.environ.get("GEMINI_API_KEY"):
         print("\n⚠️ WARNING: GEMINI_API_KEY environment variable not set.")
-        print("The Gemini chatbot will not function correctly. Please set the API key in a .env file.\n")
+        print("The Gemini chatbot will not function correctly.")
     else:
-        print("\n✅ Gemini API key found. Chatbot is ready to use.\n")
+        print("\n✅ Gemini API key found. Advanced chatbot is ready to use.")
     
-    app.run(debug=True)
+    # Display service status
+    print(f"\n📊 SERVICE STATUS:")
+    print(f"   Products loaded: {len(product_service.get_all_products())}")
+    print(f"   Categories: {len(product_service.get_all_categories())}")
+    print(f"   Gift combos: {len(product_service.get_all_combos())}")
+    print(f"   Cart service: ✅ Ready")
+    print(f"   Chatbot service: {'✅ Ready' if gemini_chatbot_service else '❌ Not available'}")
+    
+    print(f"\n🌐 APPLICATION READY")
+    print("   URL: http://localhost:5000")
+    print("   Debug mode: ON")
+    print("="*50 + "\n")
+    
+    app.run(debug=True, host='0.0.0.0', port=5000)
