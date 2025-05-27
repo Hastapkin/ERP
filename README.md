@@ -287,60 +287,6 @@ ls -la app/static/images/products/
 
 </details>
 
-## 🚀 Deployment
-
-### 🐳 Docker Deployment (Recommended)
-
-```dockerfile
-# Coming soon - Docker support
-# Follow issues for updates
-```
-
-### ☁️ Cloud Deployment
-
-<details>
-<summary><b>Deploy to Heroku</b></summary>
-
-```bash
-# Install Heroku CLI
-# https://devcenter.heroku.com/articles/heroku-cli
-
-# Create Heroku app
-heroku create your-gift-shop-app
-
-# Set environment variables
-heroku config:set GEMINI_API_KEY=your_api_key
-
-# Deploy
-git push heroku main
-```
-
-</details>
-
-<details>
-<summary><b>Deploy to Railway</b></summary>
-
-1. Connect your GitHub repository to [Railway](https://railway.app)
-2. Set environment variable: `GEMINI_API_KEY`
-3. Deploy automatically on push
-
-</details>
-
-## 🤝 Contributing
-
-We love contributions! Here's how you can help:
-
-### 🐛 Found a Bug?
-1. Check existing [issues](https://github.com/yourusername/gift-shop-erp/issues)
-2. Create a [new issue](https://github.com/yourusername/gift-shop-erp/issues/new) with details
-
-### 💡 Have an Idea?
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit changes (`git commit -m 'Add AmazingFeature'`)
-4. Push to branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
 ### 📋 Development Setup
 
 ```bash
