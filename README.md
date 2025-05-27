@@ -268,19 +268,3 @@ ls -la app/static/images/products/
 ```
 
 </details>
-
-### 📋 Development Setup
-
-```bash
-# Clone your fork
-git clone https://github.com/yourusername/gift-shop-erp.git
-
-# Create development branch
-git checkout -b develop
-
-# Install development dependencies
-pip install -r requirements-dev.txt
-
-# Run tests
-python -m pytest tests/
-```
