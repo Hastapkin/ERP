@@ -3,8 +3,6 @@
 [![Python Version](https://img.shields.io/badge/python-3.8+-blue.svg)](https://python.org)
 [![Flask](https://img.shields.io/badge/flask-2.0+-green.svg)](https://flask.palletsprojects.com/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![GitHub Issues](https://img.shields.io/github/issues/yourusername/gift-shop-erp)](https://github.com/yourusername/gift-shop-erp/issues)
-[![GitHub Stars](https://img.shields.io/github/stars/yourusername/gift-shop-erp)](https://github.com/yourusername/gift-shop-erp/stargazers)
 
 > A modern, AI-powered e-commerce platform that helps customers find the perfect gifts through intelligent conversation and personalized recommendations.
 
@@ -403,27 +401,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Google Gemini AI** for powering our intelligent chatbot
 - **Flask Community** for the excellent web framework
 - **Contributors** who help make this project better
-
-## 📞 Support
-
-<div align="center">
-
-### 💬 Get Help
-
-[![GitHub Discussions](https://img.shields.io/badge/GitHub-Discussions-181717?style=for-the-badge&logo=github)](https://github.com/yourusername/gift-shop-erp/discussions)
-[![GitHub Issues](https://img.shields.io/badge/GitHub-Issues-181717?style=for-the-badge&logo=github)](https://github.com/yourusername/gift-shop-erp/issues)
-
-### 🌟 Show Your Support
-
-If this project helps you, please consider giving it a ⭐ on GitHub!
-
-[![GitHub stars](https://img.shields.io/github/stars/yourusername/gift-shop-erp?style=social)](https://github.com/yourusername/gift-shop-erp/stargazers)
-
-</div>
-
----
-
-<div align="center">
 
 **Built with ❤️ by [Your Name](https://github.com/yourusername)**
 
