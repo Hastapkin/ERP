@@ -6,24 +6,6 @@
 
 > A modern, AI-powered e-commerce platform that helps customers find the perfect gifts through intelligent conversation and personalized recommendations.
 
-## 📸 Screenshots
-
-<div align="center">
-
-### 🏠 Homepage with AI Chatbot
-![Homepage](docs/images/homepage.png)
-*Interactive homepage featuring the AI-powered gift advisor*
-
-### 🛒 Smart Product Recommendations
-![Recommendations](docs/images/recommendations.png)
-*Personalized product suggestions based on conversation context*
-
-### 🛍️ Shopping Cart & Checkout
-![Cart](docs/images/cart.png)
-*Streamlined shopping cart with real-time updates*
-
-</div>
-
 ## 🌟 Key Features
 
 <table>
