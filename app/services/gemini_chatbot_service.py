@@ -340,6 +340,23 @@ Remember: Be specific, explain your reasoning, and show enthusiasm for helping f
                 try:
                     history = self.conversation_history.get(user_id, [])
                     recommendations = self.recommender.get_recommendations(query, history)
+                    
+                    # ADD THIS DEBUG SECTION
+                    print(f"\n🔍 DEBUG RECOMMENDATIONS for query: '{query}'")
+                    print(f"📊 Analysis results:")
+                    analysis = self.recommender.analyze_query_smart(query)
+                    for key, value in analysis.items():
+                        if value:
+                            print(f"   {key}: {value}")
+                    
+                    print(f"\n🎯 Top recommendations:")
+                    for i, rec in enumerate(recommendations):
+                        print(f"   {i+1}. {rec['name']} (${rec['price']}) - Score: {rec.get('smart_score', 'N/A')}")
+                        if 'relevance_scores' in rec:
+                            print(f"      Reasons: {rec['relevance_scores']}")
+                    print("="*50)
+                    # END DEBUG SECTION
+                    
                     print(f"🎯 Generated {len(recommendations)} SMART recommendations with explanations")
                     
                     # Debug: Print smart scores for monitoring

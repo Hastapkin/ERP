@@ -45,7 +45,114 @@ class AdvancedRecommender:
     def analyze_query_smart(self, query):
         """Smart query analysis - CORE INTELLIGENCE"""
         query_lower = query.lower()
-        
+        print(f"🔍 ANALYZING QUERY: '{query}' -> '{query_lower}'")
+
+        # Extract budget information - IMPROVED WITH RANGES
+        budget_info = {}
+
+        # RANGE budget patterns (between X and Y) - NEW!
+        range_budget_patterns = [
+            r'between\s*\$?(\d+(?:\.\d+)?)\s*(?:and|\-|to)\s*\$?(\d+(?:\.\d+)?)',
+            r'from\s*\$?(\d+(?:\.\d+)?)\s*(?:to|\-)\s*\$?(\d+(?:\.\d+)?)',
+            r'\$?(\d+(?:\.\d+)?)\s*(?:to|\-)\s*\$?(\d+(?:\.\d+)?)',
+            r'\$?(\d+(?:\.\d+)?)\s*and\s*\$?(\d+(?:\.\d+)?)',
+        ]
+
+        # MAXIMUM budget patterns (under, below, less than)
+        max_budget_patterns = [
+            r'under\s*\$?(\d+(?:\.\d+)?)',
+            r'below\s*\$?(\d+(?:\.\d+)?)',
+            r'less\s+than\s*\$?(\d+(?:\.\d+)?)',
+            r'around\s*\$?(\d+(?:\.\d+)?)',
+            r'about\s*\$?(\d+(?:\.\d+)?)',
+            r'budget.*?\$?(\d+(?:\.\d+)?)',
+            r'\$(\d+(?:\.\d+)?)\s*budget',
+            r'max.*?\$?(\d+(?:\.\d+)?)',
+            r'maximum.*?\$?(\d+(?:\.\d+)?)',
+        ]
+
+        # MINIMUM budget patterns (above, over, more than)
+        min_budget_patterns = [
+            r'above\s*\$?(\d+(?:\.\d+)?)',
+            r'over\s*\$?(\d+(?:\.\d+)?)',
+            r'more\s+than\s*\$?(\d+(?:\.\d+)?)',
+            r'at\s+least\s*\$?(\d+(?:\.\d+)?)',
+            r'minimum.*?\$?(\d+(?:\.\d+)?)',
+            r'min.*?\$?(\d+(?:\.\d+)?)',
+        ]
+
+        # Check for RANGE budget first (highest priority)
+        for pattern in range_budget_patterns:
+            match = re.search(pattern, query_lower)
+            if match:
+                min_amount = float(match.group(1))
+                max_amount = float(match.group(2))
+                
+                # Ensure min is smaller than max
+                if min_amount > max_amount:
+                    min_amount, max_amount = max_amount, min_amount
+                
+                budget_info = {
+                    'type': 'range',
+                    'min_amount': min_amount,
+                    'max_amount': max_amount,
+                    'category': 'low' if max_amount <= 25 else 'medium' if max_amount <= 60 else 'high',
+                    'confidence': 0.95
+                }
+                print(f"🔍 FOUND RANGE BUDGET: ${min_amount} - ${max_amount}")
+                break
+
+        # Check for MAXIMUM budget if no range found
+        if not budget_info:
+            for pattern in max_budget_patterns:
+                match = re.search(pattern, query_lower)
+                if match:
+                    amount = float(match.group(1))
+                    budget_info = {
+                        'type': 'max',
+                        'max_amount': amount,
+                        'category': 'low' if amount <= 25 else 'medium' if amount <= 60 else 'high',
+                        'confidence': 0.9
+                    }
+                    print(f"🔍 FOUND MAX BUDGET: ${amount}")
+                    break
+
+        # Check for MINIMUM budget if no max budget found
+        if not budget_info:
+            for pattern in min_budget_patterns:
+                match = re.search(pattern, query_lower)
+                if match:
+                    amount = float(match.group(1))
+                    budget_info = {
+                        'type': 'min',
+                        'min_amount': amount,
+                        'category': 'low' if amount <= 25 else 'medium' if amount <= 60 else 'high',
+                        'confidence': 0.9
+                    }
+                    print(f"🔍 FOUND MIN BUDGET: ${amount}")
+                    break
+
+        # Check for general dollar amounts if no specific budget found
+        if not budget_info:
+            dollar_pattern = r'\$(\d+(?:\.\d+)?)'
+            match = re.search(dollar_pattern, query_lower)
+            if match:
+                amount = float(match.group(1))
+                budget_info = {
+                    'type': 'max',
+                    'max_amount': amount,
+                    'category': 'low' if amount <= 25 else 'medium' if amount <= 60 else 'high',
+                    'confidence': 0.6
+                }
+                print(f"🔍 FOUND GENERAL BUDGET: ${amount}")
+
+        # Budget category keywords - if no specific amount found
+        if not budget_info:
+            if any(word in query_lower for word in ['cheap', 'budget', 'affordable', 'inexpensive', 'low cost']):
+                budget_info = {'type': 'max', 'category': 'low', 'max_amount': 25, 'confidence': 0.7}
+            elif any(word in query_lower for word in ['expensive', 'premium', 'high-end', 'luxury']):
+                budget_info = {'type': 'min', 'category': 'high', 'min_amount': 50, 'confidence': 0.7}
+                
         # Extract age information
         age_info = {}
         
@@ -72,56 +179,33 @@ class AdvancedRecommender:
                     age_info = {'group': 'adult', 'specific_age': age, 'confidence': 0.9}
                 break
         
-        # Age group keywords if no specific age found
         if not age_info:
             age_keywords = {
                 'baby': 'toddler', 'toddler': 'toddler', 'infant': 'toddler',
                 'child': 'child', 'kid': 'child', 'children': 'child',
-                'tween': 'tween', 'preteen': 'tween',
-                'teen': 'teen', 'teenager': 'teen', 'adolescent': 'teen',
-                'adult': 'adult', 'grown': 'adult'
+                'teenager': 'teen', 'teen': 'teen', 'adolescent': 'teen',  # Removed 'tween'
+                'adult': 'adult', 'grown': 'adult', 'grownup': 'adult'
             }
             
             for keyword, group in age_keywords.items():
-                if keyword in query_lower:
+                # Use word boundaries to avoid false matches like "between" -> "tween"
+                if re.search(r'\b' + keyword + r'\b', query_lower):
                     age_info = {'group': group, 'confidence': 0.7}
+                    print(f"🔍 FOUND AGE GROUP: {group} from keyword '{keyword}'")
                     break
+            
+            # Handle "tween" separately with more specific pattern
+            if not age_info and re.search(r'\btween\b', query_lower):
+                age_info = {'group': 'tween', 'confidence': 0.7}
+                print(f"🔍 FOUND AGE GROUP: tween")
+
+        print(f"🔍 AGE DETECTION COMPLETE: {age_info}")
         
         # Extract interests
         interests = []
         for interest, keywords in self.smart_keywords.items():
             if any(keyword in query_lower for keyword in keywords):
                 interests.append(interest)
-        
-        # Extract budget information
-        budget_info = {}
-        budget_patterns = [
-            r'under\s*\$?(\d+)',
-            r'below\s*\$?(\d+)',
-            r'less\s+than\s*\$?(\d+)',
-            r'around\s*\$?(\d+)',
-            r'about\s*\$?(\d+)',
-            r'budget.*?\$?(\d+)',
-            r'\$(\d+)'
-        ]
-        
-        for pattern in budget_patterns:
-            match = re.search(pattern, query_lower)
-            if match:
-                amount = float(match.group(1))
-                budget_info = {
-                    'max_amount': amount,
-                    'category': 'low' if amount <= 25 else 'medium' if amount <= 60 else 'high',
-                    'confidence': 0.8
-                }
-                break
-        
-        # Budget category keywords
-        if not budget_info:
-            if any(word in query_lower for word in ['cheap', 'budget', 'affordable', 'inexpensive']):
-                budget_info = {'category': 'low', 'confidence': 0.6}
-            elif any(word in query_lower for word in ['expensive', 'premium', 'high-end', 'luxury']):
-                budget_info = {'category': 'high', 'confidence': 0.6}
         
         # Extract occasion
         occasion = None
@@ -136,31 +220,58 @@ class AdvancedRecommender:
                 occasion = occ
                 break
         
-        # Extract relationship
+        # Extract relationship information
         relationship = None
         relationships = {
-            'child': ['son', 'daughter', 'child', 'kid'],
+            'child': ['son', 'daughter', 'child', 'kid', 'boy', 'girl', 'children'],  # Added boy/girl
             'family': ['mom', 'dad', 'mother', 'father', 'sister', 'brother', 'nephew', 'niece', 'cousin'],
             'friend': ['friend', 'buddy', 'pal', 'bestie'],
             'romantic': ['boyfriend', 'girlfriend', 'husband', 'wife', 'partner']
         }
-        
+
         for rel_type, keywords in relationships.items():
             if any(keyword in query_lower for keyword in keywords):
                 relationship = rel_type
+                print(f"🔍 FOUND RELATIONSHIP: {rel_type}")
                 break
-        
-        return {
+
+        # Extract gender information - NEW
+        gender = None
+        if 'boy' in query_lower or 'son' in query_lower:
+            gender = 'male'
+            print(f"🔍 FOUND GENDER: male")
+        elif 'girl' in query_lower or 'daughter' in query_lower:
+            gender = 'female'
+            print(f"🔍 FOUND GENDER: female")
+
+        # If we found "boy" or "girl" but no specific age, assume child age group
+        if gender and not age_info:
+            age_info = {'group': 'child', 'confidence': 0.7}
+            print(f"🔍 INFERRED AGE GROUP: child (from gender)")
+
+        # Update the return statement to include gender
+        result = {
             'age_info': age_info,
             'interests': interests,
             'budget_info': budget_info,
             'occasion': occasion,
-            'relationship': relationship
+            'relationship': relationship,
+            'gender': gender  # NEW
         }
+        
+        print(f"📊 ANALYSIS COMPLETE: {result}")
+        return result
 
     def get_recommendations(self, query, conversation_history, limit=3):
         """Get personalized recommendations with smart analysis - UPGRADED CORE METHOD"""
         try:
+            print(f"🔍 STARTING ANALYSIS for query: '{query}'")
+            # CRITICAL DEBUG - Let's see what analyze_query_smart returns
+            analysis = self.analyze_query_smart(query)
+            print(f"📊 RAW ANALYSIS RESULT: {analysis}")
+            if not analysis or len(analysis) == 0:
+                print("❌ ANALYSIS FAILED - Empty result")
+                
             # Analyze conversation history for additional context
             all_text = query
             if conversation_history and len(conversation_history) > 0:
@@ -207,6 +318,12 @@ class AdvancedRecommender:
         score = 1.0
         reasons = []
         
+        # GET ITEM DETAILS FIRST - This was missing!
+        item_name = item.get('name', '').lower()
+        item_description = item.get('description', '').lower()
+        item_category = item.get('category', '').lower()
+        item_price = item.get('price', 0)  # ← This line was missing!
+        
         # Age appropriateness scoring
         age_info = analysis.get('age_info', {})
         if age_info.get('group'):
@@ -225,8 +342,6 @@ class AdvancedRecommender:
         
         # Interest matching scoring
         interests = analysis.get('interests', [])
-        item_name = item.get('name', '').lower()
-        item_description = item.get('description', '').lower()
         
         for interest in interests:
             if interest in self.smart_keywords:
@@ -243,32 +358,75 @@ class AdvancedRecommender:
                     score *= 1.8  # Good boost for description match
                     reasons.append(f"Great for {interest} interests")
         
-        # Budget compatibility scoring
+        # BUDGET FILTERING - Handle min, max, and RANGE budgets
         budget_info = analysis.get('budget_info', {})
-        item_price = item.get('price', 0)
-        
-        if budget_info.get('max_amount'):
+        budget_penalty = 1.0
+
+        if budget_info.get('type') == 'range':
+            # Range budget (between X and Y) - NEW!
+            min_budget = budget_info['min_amount']
+            max_budget = budget_info['max_amount']
+            
+            if min_budget <= item_price <= max_budget:
+                score *= 2.0  # Strong boost for perfect range match
+                reasons.append(f"Perfect fit: ${min_budget:.0f}-${max_budget:.0f} range")
+            elif item_price < min_budget:
+                if item_price >= min_budget * 0.85:  # Close to range
+                    score *= 1.1
+                    reasons.append(f"Close to ${min_budget:.0f}-${max_budget:.0f} range")
+                else:
+                    score *= 0.5  # Too cheap for requested range
+                    reasons.append(f"Below ${min_budget:.0f}-${max_budget:.0f} range")
+            else:  # item_price > max_budget
+                if item_price <= max_budget * 1.15:  # Slightly over
+                    score *= 1.2
+                    reasons.append(f"Slightly over ${min_budget:.0f}-${max_budget:.0f} range")
+                else:
+                    score *= 0.4  # Too expensive for requested range
+                    reasons.append(f"Over ${min_budget:.0f}-${max_budget:.0f} range")
+
+        elif budget_info.get('type') == 'max' and budget_info.get('max_amount'):
+            # Maximum budget (under, below, less than)
             max_budget = budget_info['max_amount']
             if item_price <= max_budget:
-                score *= 1.5  # Boost for within budget
+                score *= 1.5  # Strong boost for within budget
                 reasons.append(f"Within ${max_budget:.0f} budget")
-            elif item_price <= max_budget * 1.1:  # Slightly over budget
-                score *= 1.2
-                reasons.append(f"Close to ${max_budget:.0f} budget")
-            elif item_price > max_budget * 1.3:  # Way over budget
-                score *= 0.3  # Heavy penalty
-        
+            elif item_price <= max_budget * 1.15:  # 15% over budget
+                score *= 1.2  # Smaller boost
+                reasons.append(f"Slightly over ${max_budget:.0f} budget")
+            else:
+                score *= 0.3  # Heavy penalty for way over budget
+                reasons.append(f"Over ${max_budget:.0f} budget")
+
+        elif budget_info.get('type') == 'min' and budget_info.get('min_amount'):
+            # Minimum budget (above, over, more than)
+            min_budget = budget_info['min_amount']
+            if item_price >= min_budget:
+                score *= 1.5  # Strong boost for meeting minimum
+                reasons.append(f"Above ${min_budget:.0f} as requested")
+            elif item_price >= min_budget * 0.85:  # 15% below minimum
+                score *= 1.2  # Smaller boost
+                reasons.append(f"Close to ${min_budget:.0f} minimum")
+            else:
+                score *= 0.4  # Penalty for being too cheap
+                reasons.append(f"Below ${min_budget:.0f} minimum")
+
         elif budget_info.get('category'):
+            # Category-based budget (same as before)
             budget_cat = budget_info['category']
             if budget_cat == 'low' and item_price <= 25:
                 score *= 1.3
-                reasons.append("Budget-friendly option")
+                reasons.append("Budget-friendly")
             elif budget_cat == 'medium' and 20 <= item_price <= 60:
                 score *= 1.2
-                reasons.append("Good value for money")
+                reasons.append("Good value")
             elif budget_cat == 'high' and item_price >= 50:
                 score *= 1.1
-                reasons.append("Premium quality item")
+                reasons.append("Premium quality")
+            else:
+                score *= 0.8  # Wrong budget category
+
+        print(f"   BUDGET ANALYSIS: {budget_info.get('type', 'none')} budget, Item: ${item_price}, Score: {score:.2f}")
         
         # Occasion appropriateness
         occasion = analysis.get('occasion')

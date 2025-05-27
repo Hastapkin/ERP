@@ -150,9 +150,7 @@ class ProductService:
         self.products = []
         self.categories = []
         self.combos = []
-        
-        print("No Excel data found. Using empty product catalog.")
-    
+            
     def get_all_products(self):
         """Return all products"""
         return self.products
