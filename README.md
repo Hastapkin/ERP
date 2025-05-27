@@ -11,7 +11,6 @@ ERP_PROJECT/
 │   │   ├── services/
 │   │   │   ├── __init__.py
 │   │   │   ├── cart_service.py
-│   │   │   ├── chatbot_service.py
 │   │   │   ├── gemini_chatbot_service.py
 │   │   │   ├── context_analyzer.py
 │   │   │   ├── advanced_recommender.py

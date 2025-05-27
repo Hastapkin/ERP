@@ -1,10 +1,40 @@
+import re
+
 class AdvancedRecommender:
-    """Advanced product recommendation system"""
+    """Advanced product recommendation system - SMART UPGRADED VERSION"""
     
     def __init__(self, products=None, categories=None, combos=None):
         self.products = products or []
         self.categories = categories or []
         self.combos = combos or []
+        
+        # SMART ANALYSIS CAPABILITIES - NEW
+        self.smart_keywords = {
+            'art': ['art', 'drawing', 'painting', 'creative', 'sketch', 'color', 'craft', 'artistic', 'create'],
+            'science': ['science', 'experiment', 'chemistry', 'STEM', 'discovery', 'lab', 'educational', 'learn'],
+            'sports': ['sports', 'athletic', 'exercise', 'active', 'outdoor', 'ball', 'fitness', 'physical'],
+            'music': ['music', 'singing', 'instrument', 'karaoke', 'sound', 'piano', 'guitar', 'musical'],
+            'gaming': ['game', 'gaming', 'electronic', 'console', 'handheld', 'video', 'digital'],
+            'reading': ['book', 'story', 'read', 'tale', 'literature', 'novel', 'stories'],
+            'building': ['building', 'construction', 'blocks', 'build', 'assemble', 'lego'],
+            'tech': ['tech', 'technology', 'gadget', 'device', 'smart', 'bluetooth', 'digital']
+        }
+        
+        # AGE-APPROPRIATE SCORING - NEW
+        self.age_scores = {
+            'toddler': {'Arts & Crafts': 0.9, 'Toys': 1.0, 'Books': 0.7, 'Electronics': 0.2, 'Clothes': 0.8},
+            'child': {'Arts & Crafts': 1.0, 'Toys': 1.0, 'Books': 0.9, 'Electronics': 0.4, 'Sports': 0.7, 'Clothes': 0.6},
+            'tween': {'Arts & Crafts': 0.8, 'Toys': 0.9, 'Books': 0.8, 'Electronics': 0.7, 'Sports': 0.8, 'Clothes': 0.7},
+            'teen': {'Electronics': 1.0, 'Clothes': 1.0, 'Arts & Crafts': 0.6, 'Books': 0.7, 'Sports': 0.8, 'Toys': 0.4},
+            'adult': {'Electronics': 1.0, 'Books': 1.0, 'Arts & Crafts': 0.7, 'Clothes': 0.9, 'Sports': 0.8, 'Toys': 0.2}
+        }
+        
+        # OCCASION PREFERENCES - NEW
+        self.occasion_boosts = {
+            'birthday': {'boost': 1.3, 'categories': ['Toys', 'Arts & Crafts', 'Electronics', 'Books']},
+            'christmas': {'boost': 1.4, 'categories': ['Toys', 'Electronics', 'Books', 'Arts & Crafts']},
+            'graduation': {'boost': 1.2, 'categories': ['Electronics', 'Books', 'Clothes']}
+        }
     
     def set_products(self, products, categories, combos):
         """Update product data"""
@@ -12,222 +42,372 @@ class AdvancedRecommender:
         self.categories = categories
         self.combos = combos
     
-    def get_recommendations(self, query, conversation_history, limit=3):
-        """Get personalized recommendations based on conversation context"""
-        try:
-            # Import locally to avoid circular import
-            from app.services.context_analyzer import ContextAnalyzer
-            context_analyzer = ContextAnalyzer()
-        except ImportError as e:
-            print(f"Failed to import ContextAnalyzer: {e}")
-            return self._get_basic_recommendations(limit)
+    def analyze_query_smart(self, query):
+        """Smart query analysis - CORE INTELLIGENCE"""
+        query_lower = query.lower()
         
+        # Extract age information
+        age_info = {}
+        
+        # Specific age patterns
+        age_patterns = [
+            r'(\d+)\s*(?:year|yr)s?\s*old',
+            r'age\s*(\d+)',
+            r'(\d+)[- ]year[- ]old'
+        ]
+        
+        for pattern in age_patterns:
+            match = re.search(pattern, query_lower)
+            if match:
+                age = int(match.group(1))
+                if age <= 3:
+                    age_info = {'group': 'toddler', 'specific_age': age, 'confidence': 0.9}
+                elif age <= 8:
+                    age_info = {'group': 'child', 'specific_age': age, 'confidence': 0.9}
+                elif age <= 12:
+                    age_info = {'group': 'tween', 'specific_age': age, 'confidence': 0.9}
+                elif age <= 17:
+                    age_info = {'group': 'teen', 'specific_age': age, 'confidence': 0.9}
+                else:
+                    age_info = {'group': 'adult', 'specific_age': age, 'confidence': 0.9}
+                break
+        
+        # Age group keywords if no specific age found
+        if not age_info:
+            age_keywords = {
+                'baby': 'toddler', 'toddler': 'toddler', 'infant': 'toddler',
+                'child': 'child', 'kid': 'child', 'children': 'child',
+                'tween': 'tween', 'preteen': 'tween',
+                'teen': 'teen', 'teenager': 'teen', 'adolescent': 'teen',
+                'adult': 'adult', 'grown': 'adult'
+            }
+            
+            for keyword, group in age_keywords.items():
+                if keyword in query_lower:
+                    age_info = {'group': group, 'confidence': 0.7}
+                    break
+        
+        # Extract interests
+        interests = []
+        for interest, keywords in self.smart_keywords.items():
+            if any(keyword in query_lower for keyword in keywords):
+                interests.append(interest)
+        
+        # Extract budget information
+        budget_info = {}
+        budget_patterns = [
+            r'under\s*\$?(\d+)',
+            r'below\s*\$?(\d+)',
+            r'less\s+than\s*\$?(\d+)',
+            r'around\s*\$?(\d+)',
+            r'about\s*\$?(\d+)',
+            r'budget.*?\$?(\d+)',
+            r'\$(\d+)'
+        ]
+        
+        for pattern in budget_patterns:
+            match = re.search(pattern, query_lower)
+            if match:
+                amount = float(match.group(1))
+                budget_info = {
+                    'max_amount': amount,
+                    'category': 'low' if amount <= 25 else 'medium' if amount <= 60 else 'high',
+                    'confidence': 0.8
+                }
+                break
+        
+        # Budget category keywords
+        if not budget_info:
+            if any(word in query_lower for word in ['cheap', 'budget', 'affordable', 'inexpensive']):
+                budget_info = {'category': 'low', 'confidence': 0.6}
+            elif any(word in query_lower for word in ['expensive', 'premium', 'high-end', 'luxury']):
+                budget_info = {'category': 'high', 'confidence': 0.6}
+        
+        # Extract occasion
+        occasion = None
+        occasions = {
+            'birthday': ['birthday', 'bday', 'b-day', 'born'],
+            'christmas': ['christmas', 'xmas', 'holiday', 'festive'],
+            'graduation': ['graduation', 'graduate', 'grad', 'commencement']
+        }
+        
+        for occ, keywords in occasions.items():
+            if any(keyword in query_lower for keyword in keywords):
+                occasion = occ
+                break
+        
+        # Extract relationship
+        relationship = None
+        relationships = {
+            'child': ['son', 'daughter', 'child', 'kid'],
+            'family': ['mom', 'dad', 'mother', 'father', 'sister', 'brother', 'nephew', 'niece', 'cousin'],
+            'friend': ['friend', 'buddy', 'pal', 'bestie'],
+            'romantic': ['boyfriend', 'girlfriend', 'husband', 'wife', 'partner']
+        }
+        
+        for rel_type, keywords in relationships.items():
+            if any(keyword in query_lower for keyword in keywords):
+                relationship = rel_type
+                break
+        
+        return {
+            'age_info': age_info,
+            'interests': interests,
+            'budget_info': budget_info,
+            'occasion': occasion,
+            'relationship': relationship
+        }
+
+    def get_recommendations(self, query, conversation_history, limit=3):
+        """Get personalized recommendations with smart analysis - UPGRADED CORE METHOD"""
         try:
-            # Analyze the latest query
-            query_analysis = context_analyzer.analyze_query(query)
+            # Analyze conversation history for additional context
+            all_text = query
+            if conversation_history and len(conversation_history) > 0:
+                # Get recent user messages for context
+                recent_messages = []
+                for msg in conversation_history[-6:]:  # Last 3 exchanges
+                    if msg.get('role') == 'user':
+                        recent_messages.append(msg['parts'][0]['text'])
+                
+                # Combine with current query for analysis
+                all_text = ' '.join(recent_messages + [query])
             
-            # Analyze the entire conversation for context  
-            context_analysis = context_analyzer.analyze_conversation(conversation_history)
+            # Smart analysis of combined context
+            analysis = self.analyze_query_smart(all_text)
             
-            # Combine analyses
-            combined_analysis = {**context_analysis, **query_analysis}
-            
-            # Score and rank products
+            # Score all products with smart logic
             scored_products = []
             for product in self.products:
-                score = self._calculate_product_score(product, combined_analysis)
-                scored_products.append((product, score, 'product'))
+                score, reasons = self._calculate_smart_score(product, analysis)
+                scored_products.append((product, score, reasons, 'product'))
             
-            # Score and rank combos
+            # Score combos with bonus
             for combo in self.combos:
-                score = self._calculate_combo_score(combo, combined_analysis)
-                scored_products.append((combo, score, 'combo'))
+                score, reasons = self._calculate_smart_score(combo, analysis)
+                combo_score = score * 1.2  # Combo bonus
+                reasons.append("Special gift bundle")
+                scored_products.append((combo, combo_score, reasons, 'combo'))
             
             # Sort by score
             scored_products.sort(key=lambda x: x[1], reverse=True)
             
-            # Ensure diverse recommendations
-            diverse_recommendations = self._ensure_diverse_recommendations(scored_products, limit)
+            # Select diverse items avoiding same category
+            diverse_items = self._select_diverse_smart(scored_products, limit)
             
-            # Format recommendations for display
-            formatted_recommendations = []
-            for item, _, item_type in diverse_recommendations:
-                formatted_recommendations.append({
-                    "id": item["id"],
-                    "name": item["name"],
-                    "price": item["price"],
-                    "image": item["image"],
-                    "description": item["description"],
-                    "type": item_type,
-                    "relevance_scores": self._get_relevance_details(item, combined_analysis)
-                })
+            # Format with smart explanations
+            return self._format_with_explanations(diverse_items, analysis)
             
-            return formatted_recommendations
         except Exception as e:
-            print(f"Error in get_recommendations: {e}")
+            print(f"Error in smart recommendations: {e}")
             return self._get_basic_recommendations(limit)
     
-    def _get_basic_recommendations(self, limit=3):
-        """Fallback method when context analyzer is not available"""
-        recommendations = []
+    def _calculate_smart_score(self, item, analysis):
+        """Calculate smart score for item with detailed reasoning"""
+        score = 1.0
+        reasons = []
         
-        # Mix products and combos
-        all_items = []
-        for product in self.products[:limit]:
-            all_items.append((product, 'product'))
-        for combo in self.combos[:limit]:
-            all_items.append((combo, 'combo'))
+        # Age appropriateness scoring
+        age_info = analysis.get('age_info', {})
+        if age_info.get('group'):
+            age_group = age_info['group']
+            category = item.get('category', '')
+            
+            if age_group in self.age_scores and category in self.age_scores[age_group]:
+                age_score = self.age_scores[age_group][category]
+                score *= (1 + age_score)
+                
+                if age_score > 0.7:
+                    if age_info.get('specific_age'):
+                        reasons.append(f"Great for {age_info['specific_age']}-year-olds")
+                    else:
+                        reasons.append(f"Perfect for {age_group}s")
         
-        # Take first few items
-        for item, item_type in all_items[:limit]:
-            recommendations.append({
+        # Interest matching scoring
+        interests = analysis.get('interests', [])
+        item_name = item.get('name', '').lower()
+        item_description = item.get('description', '').lower()
+        
+        for interest in interests:
+            if interest in self.smart_keywords:
+                keywords = self.smart_keywords[interest]
+                
+                # Check name and description for interest keywords
+                name_matches = sum(1 for keyword in keywords if keyword in item_name)
+                desc_matches = sum(1 for keyword in keywords if keyword in item_description)
+                
+                if name_matches > 0:
+                    score *= 2.5  # Strong boost for name match
+                    reasons.append(f"Perfect for {interest} lovers")
+                elif desc_matches > 0:
+                    score *= 1.8  # Good boost for description match
+                    reasons.append(f"Great for {interest} interests")
+        
+        # Budget compatibility scoring
+        budget_info = analysis.get('budget_info', {})
+        item_price = item.get('price', 0)
+        
+        if budget_info.get('max_amount'):
+            max_budget = budget_info['max_amount']
+            if item_price <= max_budget:
+                score *= 1.5  # Boost for within budget
+                reasons.append(f"Within ${max_budget:.0f} budget")
+            elif item_price <= max_budget * 1.1:  # Slightly over budget
+                score *= 1.2
+                reasons.append(f"Close to ${max_budget:.0f} budget")
+            elif item_price > max_budget * 1.3:  # Way over budget
+                score *= 0.3  # Heavy penalty
+        
+        elif budget_info.get('category'):
+            budget_cat = budget_info['category']
+            if budget_cat == 'low' and item_price <= 25:
+                score *= 1.3
+                reasons.append("Budget-friendly option")
+            elif budget_cat == 'medium' and 20 <= item_price <= 60:
+                score *= 1.2
+                reasons.append("Good value for money")
+            elif budget_cat == 'high' and item_price >= 50:
+                score *= 1.1
+                reasons.append("Premium quality item")
+        
+        # Occasion appropriateness
+        occasion = analysis.get('occasion')
+        if occasion and occasion in self.occasion_boosts:
+            occasion_data = self.occasion_boosts[occasion]
+            category = item.get('category', '')
+            
+            if category in occasion_data['categories']:
+                score *= occasion_data['boost']
+                reasons.append(f"Perfect for {occasion}")
+        
+        # Relationship appropriateness
+        relationship = analysis.get('relationship')
+        if relationship:
+            if relationship == 'child' and any(word in item_name for word in ['kid', 'child', 'young']):
+                score *= 1.2
+                reasons.append("Great for kids")
+            elif relationship == 'teen' and item.get('category') in ['Electronics', 'Clothes']:
+                score *= 1.1
+                reasons.append("Teen-appropriate")
+        
+        return score, reasons
+    
+    def _select_diverse_smart(self, scored_items, limit):
+        """Select diverse items avoiding same category repetition"""
+        if len(scored_items) <= limit:
+            return scored_items
+        
+        selected = []
+        seen_categories = set()
+        
+        # First pass: Select high-scoring items from different categories
+        for item, score, reasons, item_type in scored_items:
+            if len(selected) >= limit:
+                break
+                
+            category = item.get('category', 'Unknown')
+            
+            # Prefer diversity but allow same category if score is significantly higher
+            if (category not in seen_categories or 
+                score > 4.0 or  # Very high score overrides diversity
+                len(seen_categories) >= len(self.categories)):  # All categories seen
+                
+                selected.append((item, score, reasons, item_type))
+                seen_categories.add(category)
+        
+        # Second pass: Fill remaining slots with highest scoring items
+        for item, score, reasons, item_type in scored_items:
+            if len(selected) >= limit:
+                break
+            if (item, score, reasons, item_type) not in selected:
+                selected.append((item, score, reasons, item_type))
+        
+        return selected[:limit]
+    
+    def _format_with_explanations(self, items, analysis):
+        """Format items with smart explanations and confidence levels"""
+        formatted = []
+        
+        for item, score, reasons, item_type in items:
+            # Determine confidence level based on score
+            if score > 5.0:
+                confidence = "Highly recommended"
+            elif score > 3.0:
+                confidence = "Good match"
+            elif score > 2.0:
+                confidence = "Consider this option"
+            else:
+                confidence = "Popular choice"
+            
+            # Create relevance explanation
+            relevance_scores = {}
+            if reasons:
+                # Use top 2 reasons for strengths
+                relevance_scores['strengths'] = ', '.join(reasons[:2])
+                relevance_scores['confidence'] = confidence
+                
+                # Add considerations if any
+                if len(reasons) > 2:
+                    relevance_scores['additional'] = ', '.join(reasons[2:3])
+            else:
+                relevance_scores['suggestion'] = "Popular choice"
+                relevance_scores['confidence'] = confidence
+            
+            formatted.append({
                 "id": item["id"],
                 "name": item["name"],
                 "price": item["price"],
                 "image": item["image"],
                 "description": item["description"],
                 "type": item_type,
-                "relevance_scores": {"suggestion": "Popular item"}
+                "relevance_scores": relevance_scores,
+                "smart_score": round(score, 1)  # For debugging
             })
         
-        return recommendations
+        return formatted
     
-    def _calculate_product_score(self, product, analysis):
-        """Calculate relevance score for a product based on user preferences"""
-        score = 0.0
-        
-        # Start with base score
-        base_score = 1.0
-        score += base_score
-        
-        # Category match
-        if analysis.get('interests'):
-            for interest in analysis['interests']:
-                if self._is_category_related_to_interest(product['category'], interest):
-                    score += 2.0
-        
-        # Age group match
-        if analysis.get('age_group'):
-            age_group = analysis['age_group']
-            if self._is_product_suitable_for_age(product, age_group):
-                score += 1.5
-        
-        # Budget match
-        if analysis.get('budget'):
-            budget = analysis['budget']
-            if self._is_product_in_budget(product, budget):
-                score += 1.0
-        
-        # Occasion match
-        if analysis.get('occasion'):
-            for occasion in analysis['occasion']:
-                if self._is_product_suitable_for_occasion(product, occasion):
-                    score += 1.5
-        
-        # Relationship appropriateness
-        if analysis.get('relationship'):
-            for relationship in analysis['relationship']:
-                if self._is_product_suitable_for_relationship(product, relationship):
-                    score += 1.0
-        
-        return score
-    
-    def _calculate_combo_score(self, combo, analysis):
-        """Calculate relevance score for a combo based on user preferences"""
-        # Start with higher base score for combos as they're generally better gifts
-        score = 2.0
-        
-        # Occasion match is very important for combos
-        if analysis.get('occasion'):
-            for occasion in analysis['occasion']:
-                if self._is_combo_suitable_for_occasion(combo, occasion):
-                    score += 2.5
-        
-        # Budget match - combos are often more expensive
-        if analysis.get('budget'):
-            budget = analysis['budget']
-            if (budget == 'medium' and combo['price'] < 60) or (budget == 'high'):
-                score += 1.5
-        
-        # Relationship appropriateness
-        if analysis.get('relationship'):
-            for relationship in analysis['relationship']:
-                if self._is_combo_suitable_for_relationship(combo, relationship):
-                    score += 1.5
-        
-        return score
-    
-    def _ensure_diverse_recommendations(self, scored_items, limit):
-        """Ensure recommendations are diverse (not all from same category)"""
-        if not scored_items:
-            return []
-        
-        # Always include top item
-        recommendations = [scored_items[0]]
-        seen_categories = {scored_items[0][0].get('category')}
-        
-        # Handle case with very few items
-        if len(scored_items) <= limit:
-            return scored_items
-        
-        # Try to add diverse recommendations
-        for item, score, item_type in scored_items[1:]:
-            if len(recommendations) >= limit:
-                break
-                
-            category = item.get('category')
+    def _get_basic_recommendations(self, limit=3):
+        """Fallback recommendations when analysis fails"""
+        try:
+            recommendations = []
             
-            # If we haven't seen this category yet, or we've seen all categories
-            if category not in seen_categories or len(seen_categories) >= min(3, len(self.categories)):
-                recommendations.append((item, score, item_type))
-                seen_categories.add(category)
+            # Get variety of products and combos
+            seen_categories = set()
+            all_items = []
+            
+            # Add products
+            for product in self.products[:limit*2]:
+                all_items.append((product, 'product'))
+            
+            # Add combos
+            for combo in self.combos[:limit]:
+                all_items.append((combo, 'combo'))
+            
+            # Select diverse items
+            for item, item_type in all_items:
+                if len(recommendations) >= limit:
+                    break
+                    
+                category = item.get('category', '')
+                if category not in seen_categories or len(seen_categories) >= len(self.categories):
+                    recommendations.append({
+                        "id": item["id"],
+                        "name": item["name"],
+                        "price": item["price"],
+                        "image": item["image"],
+                        "description": item["description"],
+                        "type": item_type,
+                        "relevance_scores": {"suggestion": "Popular choice"}
+                    })
+                    seen_categories.add(category)
         
-        # If we still need more recommendations, add the highest scored remaining ones
-        remaining_items = [item for item in scored_items if item not in recommendations]
-        recommendations.extend(remaining_items[:limit - len(recommendations)])
-        
-        return recommendations[:limit]
-    
-    def _get_relevance_details(self, item, analysis):
-        """Get detailed relevance information for user interface"""
-        relevance = {}
-        
-        # Add relevance details
-        if analysis.get('age_group'):
-            if item.get('category') in self._get_suitable_categories_for_age(analysis['age_group']):
-                relevance['age_match'] = f"Good for {analysis['age_group']}s"
-        
-        if analysis.get('interests'):
-            matching_interests = []
-            for interest in analysis['interests']:
-                if self._is_category_related_to_interest(item.get('category'), interest):
-                    matching_interests.append(interest)
-            if matching_interests:
-                relevance['interest_match'] = f"Matches interests: {', '.join(matching_interests)}"
-        
-        if analysis.get('occasion'):
-            matching_occasions = []
-            for occasion in analysis['occasion']:
-                if self._is_product_suitable_for_occasion(item, occasion) or \
-                   (item.get('type') == 'combo' and self._is_combo_suitable_for_occasion(item, occasion)):
-                    matching_occasions.append(self._format_occasion_name(occasion))
-            if matching_occasions:
-                relevance['occasion_match'] = f"Perfect for: {', '.join(matching_occasions)}"
-        
-        if analysis.get('budget'):
-            budget = analysis['budget']
-            if self._is_product_in_budget(item, budget):
-                budget_descriptions = {
-                    'low': 'Budget-friendly option',
-                    'medium': 'Mid-range price point',
-                    'high': 'Premium quality item'
-                }
-                relevance['budget_match'] = budget_descriptions.get(budget, '')
-        
-        return relevance
-    
+            return recommendations[:limit]
+        except:
+            return []
+
+    # LEGACY METHODS - Keep for backward compatibility
     def _is_category_related_to_interest(self, category, interest):
-        """Check if a product category is related to a user interest"""
+        """Legacy method - kept for compatibility"""
         category_to_interest_map = {
             'Arts & Crafts': ['art', 'creative', 'drawing', 'painting'],
             'Toys': ['gaming', 'play', 'fun', 'children'],
@@ -243,7 +423,7 @@ class AdvancedRecommender:
         return interest in category_to_interest_map.get(category, []) or interest.lower() in category.lower()
     
     def _is_product_suitable_for_age(self, product, age_group):
-        """Check if a product is suitable for an age group"""
+        """Legacy method - kept for compatibility"""
         category = product.get('category', '')
         
         age_group_categories = {
@@ -255,121 +435,15 @@ class AdvancedRecommender:
         
         return category in age_group_categories.get(age_group, [])
     
-    def _get_suitable_categories_for_age(self, age_group):
-        """Get suitable categories for an age group"""
-        age_group_categories = {
-            'toddler': ['Toys', 'Arts & Crafts'],
-            'child': ['Toys', 'Arts & Crafts', 'Books', 'Sports'],
-            'teen': ['Electronics', 'Books', 'Clothes', 'Sports'],
-            'adult': ['Electronics', 'Books', 'Clothes', 'Sports']
-        }
-        
-        return age_group_categories.get(age_group, [])
-    
     def _is_product_in_budget(self, product, budget):
-        """Check if a product is within a budget range"""
+        """Legacy method - kept for compatibility"""
         price = product.get('price', 0)
         
         budget_ranges = {
-            'low': (0, 20),
-            'medium': (20, 50),
+            'low': (0, 25),
+            'medium': (20, 60),
             'high': (50, float('inf'))
         }
         
         min_price, max_price = budget_ranges.get(budget, (0, float('inf')))
         return min_price <= price <= max_price
-    
-    def _is_product_suitable_for_occasion(self, product, occasion):
-        """Check if a product is suitable for an occasion"""
-        occasion_categories = {
-            'birthday': ['Toys', 'Arts & Crafts', 'Electronics', 'Clothes'],
-            'christmas': ['Toys', 'Arts & Crafts', 'Electronics', 'Books'],
-            'graduation': ['Electronics', 'Books', 'Clothes'],
-            'wedding': ['Home', 'Kitchen', 'Decor'],
-            'anniversary': ['Jewelry', 'Fashion', 'Electronics'],
-            'valentines': ['Jewelry', 'Fashion', 'Electronics'],
-            'mothers_day': ['Fashion', 'Beauty', 'Home'],
-            'fathers_day': ['Electronics', 'Sports', 'Tools'],
-            'back_to_school': ['Books', 'Stationery', 'Electronics']
-        }
-        
-        category = product.get('category', '')
-        return category in occasion_categories.get(occasion, []) or \
-               any(keyword in product.get('name', '').lower() for keyword in [occasion, self._format_occasion_name(occasion).lower()])
-    
-    def _is_combo_suitable_for_occasion(self, combo, occasion):
-        """Check if a combo is suitable for an occasion"""
-        occasion_keywords = {
-            'birthday': ['birthday', 'celebration', 'special'],
-            'christmas': ['christmas', 'holiday', 'festive'],
-            'graduation': ['graduation', 'achievement', 'success'],
-            'wedding': ['wedding', 'couple', 'love'],
-            'anniversary': ['anniversary', 'love', 'romance'],
-            'valentines': ['valentine', 'love', 'romance'],
-            'mothers_day': ['mother', 'mom', 'mum'],
-            'fathers_day': ['father', 'dad'],
-            'back_to_school': ['school', 'student', 'education']
-        }
-        
-        occasion_words = occasion_keywords.get(occasion, [])
-        return any(word in combo.get('name', '').lower() for word in occasion_words) or \
-               any(word in combo.get('description', '').lower() for word in occasion_words)
-    
-    def _is_product_suitable_for_relationship(self, product, relationship):
-        """Check if a product is suitable for a relationship type"""
-        relationship_categories = {
-            'friend': ['Arts & Crafts', 'Books', 'Toys', 'Sports'],
-            'romantic_partner': ['Electronics', 'Jewelry', 'Fashion'],
-            'parent': ['Books', 'Home', 'Electronics'],
-            'child': ['Toys', 'Books', 'Arts & Crafts'],
-            'sibling': ['Electronics', 'Sports', 'Clothes'],
-            'extended_family': ['Books', 'Home', 'Food'],
-            'colleague': ['Books', 'Office', 'Stationery'],
-            'teacher': ['Books', 'Office', 'Stationery']
-        }
-        
-        category = product.get('category', '')
-        return category in relationship_categories.get(relationship, [])
-    
-    def _is_combo_suitable_for_relationship(self, combo, relationship):
-        """Check if a combo is suitable for a relationship type"""
-        relationship_keywords = {
-            'friend': ['friend', 'friendship', 'special'],
-            'romantic_partner': ['love', 'romantic', 'special'],
-            'parent': ['parent', 'mom', 'dad', 'mother', 'father'],
-            'child': ['child', 'kid', 'children'],
-            'sibling': ['brother', 'sister', 'sibling'],
-            'extended_family': ['family', 'relative'],
-            'colleague': ['colleague', 'office', 'professional'],
-            'teacher': ['teacher', 'appreciation', 'thanks']
-        }
-        
-        relationship_words = relationship_keywords.get(relationship, [])
-        return any(word in combo.get('name', '').lower() for word in relationship_words) or \
-               any(word in combo.get('description', '').lower() for word in relationship_words)
-    
-    def _format_occasion_name(self, occasion):
-        """Format occasion name for display"""
-        occasion_formats = {
-            'birthday': 'Birthday',
-            'christmas': 'Christmas',
-            'graduation': 'Graduation',
-            'wedding': 'Wedding',
-            'anniversary': 'Anniversary',
-            'valentines': "Valentine's Day",
-            'mothers_day': "Mother's Day",
-            'fathers_day': "Father's Day",
-            'thanksgiving': 'Thanksgiving',
-            'halloween': 'Halloween',
-            'new_year': 'New Year',
-            'easter': 'Easter',
-            'back_to_school': 'Back to School',
-            'baby_shower': 'Baby Shower',
-            'housewarming': 'Housewarming',
-            'retirement': 'Retirement',
-            'get_well': 'Get Well',
-            'thank_you': 'Thank You',
-            'congratulations': 'Congratulations'
-        }
-        
-        return occasion_formats.get(occasion, occasion.title())
