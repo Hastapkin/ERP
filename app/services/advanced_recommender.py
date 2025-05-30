@@ -3,6 +3,13 @@ import re
 class AdvancedRecommender:
     """Advanced product recommendation system - SMART UPGRADED VERSION"""
     
+    def _get_gender_preference(self, product_name):
+        """Get gender preference for a product based on real purchase data"""
+        for preference, products in self.gender_preferences.items():
+            if product_name in products:
+                return preference
+        return 'neutral' 
+    
     def __init__(self, products=None, categories=None, combos=None):
         self.products = products or []
         self.categories = categories or []
@@ -35,6 +42,16 @@ class AdvancedRecommender:
             'christmas': {'boost': 1.4, 'categories': ['Toys', 'Electronics', 'Books', 'Arts & Crafts']},
             'graduation': {'boost': 1.2, 'categories': ['Electronics', 'Books', 'Clothes']}
         }
+        
+        # REAL DATA-DRIVEN GENDER PREFERENCES - Based on actual purchase data
+        self.gender_preferences = {
+            'strongly_male': ['Video Game T-Shirt', 'Yoga Mat'],
+            'male_leaning': ['Watercolor Paint Set'],
+            'neutral': ['Wooden Train Set'],
+            'female_leaning': [],
+            'strongly_female': ['Mini Sketchbook', 'Wireless Bluetooth Ear Muffs']
+        }
+    
     
     def set_products(self, products, categories, combos):
         """Update product data"""
@@ -52,13 +69,22 @@ class AdvancedRecommender:
 
         # RANGE budget patterns (between X and Y) - NEW!
         range_budget_patterns = [
-            r'between\s*\$?(\d+(?:\.\d+)?)\s*(?:and|\-|to)\s*\$?(\d+(?:\.\d+)?)',
-            r'from\s*\$?(\d+(?:\.\d+)?)\s*(?:to|\-)\s*\$?(\d+(?:\.\d+)?)',
-            r'\$?(\d+(?:\.\d+)?)\s*(?:to|\-)\s*\$?(\d+(?:\.\d+)?)',
-            r'\$?(\d+(?:\.\d+)?)\s*and\s*\$?(\d+(?:\.\d+)?)',
+            # Handle "between 50$ and 100$" format (WORKING!)
+            r'between\s*(\d+(?:\.\d+)?)\$\s*and\s*(\d+(?:\.\d+)?)\$',
+            # Handle "between $50 and $100" format  
+            r'between\s*\$(\d+(?:\.\d+)?)\s*and\s*\$(\d+(?:\.\d+)?)',
+            # Handle "from 50$ to 100$" format
+            r'from\s*(\d+(?:\.\d+)?)\$\s*to\s*(\d+(?:\.\d+)?)\$',
+            # Handle "from $50 to $100" format
+            r'from\s*\$(\d+(?:\.\d+)?)\s*to\s*\$(\d+(?:\.\d+)?)',
+            # Handle "50$ to 100$" format
+            r'(\d+(?:\.\d+)?)\$\s*to\s*(\d+(?:\.\d+)?)\$',
+            # Handle "$50 to $100" format
+            r'\$(\d+(?:\.\d+)?)\s*to\s*\$(\d+(?:\.\d+)?)',
+            # Handle "between 50 and 100" (no dollar signs)
+            r'between\s*(\d+(?:\.\d+)?)\s*and\s*(\d+(?:\.\d+)?)',
         ]
 
-        # MAXIMUM budget patterns (under, below, less than)
         max_budget_patterns = [
             r'under\s*\$?(\d+(?:\.\d+)?)',
             r'below\s*\$?(\d+(?:\.\d+)?)',
@@ -69,7 +95,9 @@ class AdvancedRecommender:
             r'\$(\d+(?:\.\d+)?)\s*budget',
             r'max.*?\$?(\d+(?:\.\d+)?)',
             r'maximum.*?\$?(\d+(?:\.\d+)?)',
-        ]
+            r'within\s*\$?(\d+(?:\.\d+)?)',  # NEW! Handle "within 30$"
+            r'within\s*(\d+(?:\.\d+)?)\$',   # NEW! Handle "within 30$" format
+]
 
         # MINIMUM budget patterns (above, over, more than)
         min_budget_patterns = [
@@ -234,20 +262,21 @@ class AdvancedRecommender:
                 relationship = rel_type
                 print(f"🔍 FOUND RELATIONSHIP: {rel_type}")
                 break
-
+            
         # Extract gender information - NEW
         gender = None
-        if 'boy' in query_lower or 'son' in query_lower:
+        if any(word in query_lower for word in ['boy', 'son', 'male', 'man', 'gentleman', 'guy']):
             gender = 'male'
             print(f"🔍 FOUND GENDER: male")
-        elif 'girl' in query_lower or 'daughter' in query_lower:
+        elif any(word in query_lower for word in ['girl', 'daughter', 'female', 'woman', 'lady', 'gal']):
             gender = 'female'
             print(f"🔍 FOUND GENDER: female")
 
         # If we found "boy" or "girl" but no specific age, assume child age group
         if gender and not age_info:
-            age_info = {'group': 'child', 'confidence': 0.7}
-            print(f"🔍 INFERRED AGE GROUP: child (from gender)")
+            if any(word in query_lower for word in ['boy', 'girl', 'son', 'daughter']):
+                age_info = {'group': 'child', 'confidence': 0.7}
+                print(f"🔍 INFERRED AGE GROUP: child (from gender)")
 
         # Update the return statement to include gender
         result = {
@@ -266,26 +295,49 @@ class AdvancedRecommender:
         """Get personalized recommendations with smart analysis - UPGRADED CORE METHOD"""
         try:
             print(f"🔍 STARTING ANALYSIS for query: '{query}'")
-            # CRITICAL DEBUG - Let's see what analyze_query_smart returns
-            analysis = self.analyze_query_smart(query)
-            print(f"📊 RAW ANALYSIS RESULT: {analysis}")
-            if not analysis or len(analysis) == 0:
-                print("❌ ANALYSIS FAILED - Empty result")
-                
-            # Analyze conversation history for additional context
-            all_text = query
+            
+            # FIRST: Analyze CURRENT query only
+            current_analysis = self.analyze_query_smart(query)
+            print(f"📊 CURRENT QUERY ANALYSIS: {current_analysis}")
+            
+            # SECOND: Only if current query lacks important info, supplement with history
             if conversation_history and len(conversation_history) > 0:
                 # Get recent user messages for context
                 recent_messages = []
-                for msg in conversation_history[-6:]:  # Last 3 exchanges
+                for msg in conversation_history[-4:]:  # Reduced from 6 to 4
                     if msg.get('role') == 'user':
                         recent_messages.append(msg['parts'][0]['text'])
                 
-                # Combine with current query for analysis
+                # Combine with current query for SUPPLEMENTAL analysis
                 all_text = ' '.join(recent_messages + [query])
+                history_analysis = self.analyze_query_smart(all_text)
+                
+                # SMART MERGE: Current query takes priority, history only fills gaps
+                final_analysis = current_analysis.copy()
+                
+                # Only use history if current analysis is empty/weak
+                for key, value in history_analysis.items():
+                    if not current_analysis.get(key) and value:  # Only if current is empty
+                        # SPECIAL HANDLING for conflicting context
+                        if key == 'gender':
+                            # Don't supplement gender from history if current query mentions gender terms
+                            gender_terms = ['male', 'female', 'boy', 'girl', 'man', 'woman', 'son', 'daughter', 'guy', 'lady']
+                            if any(term in query.lower() for term in gender_terms):
+                                print(f"🚫 IGNORING GENDER from history - current query mentions gender")
+                                continue
+                        
+                        print(f"📝 SUPPLEMENTING {key} from history: {value}")
+                        final_analysis[key] = value
+                    elif key == 'budget_info' and current_analysis.get(key) and history_analysis.get(key):
+                        # For budget, ALWAYS prefer current query
+                        print(f"💰 KEEPING CURRENT BUDGET: {current_analysis[key]} (ignoring history: {history_analysis[key]})")
+                        
+                analysis = final_analysis
+                
+            else:
+                analysis = current_analysis
             
-            # Smart analysis of combined context
-            analysis = self.analyze_query_smart(all_text)
+            print(f"📊 FINAL ANALYSIS USED: {analysis}")
             
             # Score all products with smart logic
             scored_products = []
@@ -425,8 +477,6 @@ class AdvancedRecommender:
                 reasons.append("Premium quality")
             else:
                 score *= 0.8  # Wrong budget category
-
-        print(f"   BUDGET ANALYSIS: {budget_info.get('type', 'none')} budget, Item: ${item_price}, Score: {score:.2f}")
         
         # Occasion appropriateness
         occasion = analysis.get('occasion')
@@ -448,6 +498,46 @@ class AdvancedRecommender:
                 score *= 1.1
                 reasons.append("Teen-appropriate")
         
+        # GENDER APPROPRIATENESS - DATA-DRIVEN! (ADD THIS SECTION)
+        gender = analysis.get('gender')
+        if gender:
+            product_name = item.get('name', '')
+            gender_preference = self._get_gender_preference(product_name)
+            
+            if gender == 'male':
+                if gender_preference == 'strongly_male':
+                    score *= 1.5
+                    reasons.append("Perfect for boys")
+                elif gender_preference == 'male_leaning':
+                    score *= 1.2
+                    reasons.append("Great for boys")
+                elif gender_preference == 'neutral':
+                    score *= 1.0  # No change
+                elif gender_preference == 'female_leaning':
+                    score *= 0.8
+                    reasons.append("May be better for girls")
+                elif gender_preference == 'strongly_female':
+                    score *= 0.5
+                    reasons.append("Typically preferred by girls")
+            
+            elif gender == 'female':
+                if gender_preference == 'strongly_female':
+                    score *= 1.5
+                    reasons.append("Perfect for girls")
+                elif gender_preference == 'female_leaning':
+                    score *= 1.2
+                    reasons.append("Great for girls")
+                elif gender_preference == 'neutral':
+                    score *= 1.0  # No change
+                elif gender_preference == 'male_leaning':
+                    score *= 0.8
+                    reasons.append("May be better for boys")
+                elif gender_preference == 'strongly_male':
+                    score *= 0.5
+                    reasons.append("Typically preferred by boys")
+            
+            print(f"   GENDER ANALYSIS: {gender}, Product: {product_name}, Preference: {gender_preference}, Score: {score:.2f}")
+                
         return score, reasons
     
     def _select_diverse_smart(self, scored_items, limit):
