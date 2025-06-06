@@ -55,22 +55,78 @@
     </div>
 </div>
 
-<!-- Chat Bot -->
+<!-- Enhanced Chat Bot -->
 <div class="chatbot-section">
-    <h2>Gift Advisor</h2>
+    <h2>🎁 Smart Gift Advisor</h2>
     <div class="chatbot-container">
         <div class="chat-messages" id="chatMessages">
             <div class="bot-message">
-                <p>Hello! I can help you find the perfect gift. What occasion are you shopping for?</p>
+                <p><strong>Hello! I'm your Gift Guru! 🎁</strong></p>
+                <p>I'm here to help you find the perfect gift using our customer data and purchase insights!</p>
+                <p><strong>To get started, just tell me:</strong></p>
+                <p>👶 <strong>What's the age</strong> of the gift recipient? (We specialize in ages 3-12)</p>
+                <div class="conversation-hints">
+                    <p><em>I'll also ask about gender, interests, and budget to give you the best recommendations based on what other customers loved!</em></p>
+                </div>
             </div>
         </div>
         <div class="chat-input">
-            <input type="text" id="chatInput" placeholder="Ask for gift recommendations...">
+            <input type="text" id="chatInput" placeholder="Tell me the age of the gift recipient...">
             <button id="sendButton">Send</button>
         </div>
     </div>
+    
+    <!-- Quick Start Suggestions -->
+    <div class="chat-suggestions" id="chatSuggestions">
+        <h4>💡 Quick Start Examples:</h4>
+        <button class="suggestion-btn" onclick="sendSuggestion('I need a gift for my 8-year-old daughter')">8-year-old daughter</button>
+        <button class="suggestion-btn" onclick="sendSuggestion('Gift for a 6-year-old boy who loves building toys')">6-year-old boy, building toys</button>
+        <button class="suggestion-btn" onclick="sendSuggestion('Looking for something under $30 for a 10-year-old')">Under $30, 10-year-old</button>
+        <button class="suggestion-btn" onclick="sendSuggestion('My 5-year-old loves art and crafts')">5-year-old, arts & crafts</button>
+        <button class="suggestion-btn" onclick="sendSuggestion('Birthday gift for 9-year-old girl, around $25')">Birthday, 9-year-old girl, $25</button>
+    </div>
+    
     <div class="recommendations-container" id="recommendations" style="display: none;">
         <!-- Recommended products will appear here -->
     </div>
 </div>
+
+<script>
+function sendSuggestion(text) {
+    const chatInput = document.getElementById('chatInput');
+    chatInput.value = text;
+    
+    // Hide suggestions after first use
+    const suggestions = document.getElementById('chatSuggestions');
+    if (suggestions) {
+        suggestions.style.display = 'none';
+    }
+    
+    // Trigger send
+    const sendButton = document.getElementById('sendButton');
+    if (sendButton) {
+        sendButton.click();
+    }
+}
+
+// Hide suggestions when user starts typing
+document.addEventListener('DOMContentLoaded', function() {
+    const chatInput = document.getElementById('chatInput');
+    const suggestions = document.getElementById('chatSuggestions');
+    
+    if (chatInput && suggestions) {
+        chatInput.addEventListener('input', function() {
+            if (this.value.length > 0) {
+                suggestions.style.display = 'none';
+            }
+        });
+        
+        chatInput.addEventListener('focus', function() {
+            if (this.value.length > 0) {
+                suggestions.style.display = 'none';
+            }
+        });
+    }
+});
+</script>
 {% endblock %}

@@ -32,7 +32,7 @@ class GeminiChatbotService:
             # Test API key
             self._test_api_key()
             
-            print("✅ Smart GeminiChatbotService initialized successfully")
+            print("✅ GUIDED CONVERSATION GeminiChatbotService initialized successfully")
         except Exception as e:
             print(f"❌ Error initializing GeminiChatbotService: {e}")
             raise
@@ -71,7 +71,7 @@ class GeminiChatbotService:
             raise ValueError(f"API connection error: {e}")
 
     def update_product_data(self):
-        """Update product data - simplified to avoid recursion"""
+        """Update product data with ENHANCED recommender"""
         try:
             if self._lazy_product_data_load:
                 # Import locally to avoid circular imports
@@ -81,15 +81,16 @@ class GeminiChatbotService:
                 self.categories = product_service.get_all_categories()
                 self.combos = product_service.get_all_combos()
                 
-                # Initialize recommender
+                # Initialize ENHANCED recommender
                 if self.recommender is None:
                     from app.services.advanced_recommender import AdvancedRecommender
                     self.recommender = AdvancedRecommender(self.products, self.categories, self.combos)
+                    print("🧠 GUIDED AdvancedRecommender initialized")
                 else:
                     self.recommender.set_products(self.products, self.categories, self.combos)
                 
                 self._lazy_product_data_load = False
-                print(f"✅ Loaded {len(self.products)} products, {len(self.categories)} categories, {len(self.combos)} combos")
+                print(f"✅ Loaded {len(self.products)} products, {len(self.categories)} categories, {len(self.combos)} combos with GUIDED intelligence")
                 return True
                 
             return True
@@ -98,69 +99,111 @@ class GeminiChatbotService:
             return False
 
     def generate_system_prompt(self):
-        """Generate a smart context-aware system prompt - SMART UPGRADED"""
+        """Generate GUIDED CONVERSATION system prompt"""
         if self._lazy_product_data_load:
             self.update_product_data()
             
-        prompt = """You are Gift Guru - a friendly and expert gift consultant with deep product knowledge and smart recommendation capabilities.
-
-Your enhanced capabilities:
-- Understand customer needs through natural conversation  
-- Ask smart clarifying questions when needed
-- Provide specific product recommendations with clear explanations
-- Remember context and build on previous conversation
-- Consider age, interests, budget, and occasion in recommendations
-- Explain WHY you recommend specific items
-
-Our Store Information:"""
+        # Get category info for guided questions
+        category_list = ", ".join(self.categories) if self.categories else "Arts & Crafts, Toys, Books, Electronics, Clothes, Sports"
         
-        # Add enhanced product info with examples
-        if self.categories and len(self.categories) > 0:
-            prompt += f"\nCategories: {', '.join(self.categories)}"
-        
-        if self.products and len(self.products) > 0:
-            min_price = min(p['price'] for p in self.products)
-            max_price = max(p['price'] for p in self.products)
-            prompt += f"\nProducts: {len(self.products)} carefully curated items (${min_price:.0f}-${max_price:.0f})"
-            
-            # Add category examples with sample products
-            by_category = {}
-            for product in self.products[:15]:  # Sample more products
-                category = product.get('category', 'Other')
-                if category not in by_category:
-                    by_category[category] = []
-                if len(by_category[category]) < 4:  # Max 4 examples per category
-                    by_category[category].append(f"{product['name']} (${product['price']:.0f})")
-            
-            prompt += "\nSample products by category:"
-            for category, items in by_category.items():
-                prompt += f"\n- {category}: {', '.join(items)}"
-        
-        if self.combos and len(self.combos) > 0:
-            prompt += f"\nSpecial gift bundles: {len(self.combos)} curated combinations with savings"
-            # Add combo examples
-            combo_examples = []
-            for combo in self.combos[:3]:
-                combo_examples.append(f"{combo['name']} (${combo['price']:.0f})")
-            if combo_examples:
-                prompt += f"\nExample bundles: {', '.join(combo_examples)}"
-            
-        prompt += """\n\nSmart conversation guidelines:
-- When customer mentions age (like "8-year-old"), prioritize age-appropriate items and explain why they're suitable
-- When they mention interests (like "loves art"), focus on matching products and explain the connection
-- When they mention budget (like "under $25"), respect their price limit strictly and mention budget compatibility
-- When they mention occasions (like "birthday"), suggest occasion-appropriate gifts and explain appropriateness
-- When they mention relationships (like "daughter", "friend"), consider relationship-appropriate gifts
-- Always explain WHY you're recommending specific items with specific reasons
-- Keep responses helpful, friendly, and conversational
-- If you need more information, ask 1-2 specific clarifying questions
+        prompt = f"""You are Gift Guru - a FRIENDLY and SYSTEMATIC gift consultant who helps customers find perfect gifts through guided conversation.
 
-Smart response examples:
-"For an 8-year-old who loves art, I'd recommend our Art Supply Kit ($19.99) - it's perfect for that age group to develop creativity and fine motor skills!"
-"Since you mentioned a $25 budget, here are some excellent options that fit perfectly within that range, giving you great value..."
-"For a birthday gift, I'm thinking something special and fun that will make the day memorable..."
+🎯 YOUR MISSION: Guide customers through 4 KEY QUESTIONS to recommend the perfect gift based on our data.
 
-Remember: Be specific, explain your reasoning, and show enthusiasm for helping find the perfect gift!"""
+📊 OUR STORE PROFILE:
+- Age Range: 3-12 years old (our specialty!)  
+- Gender Options: Male/Female
+- Categories: {category_list}
+- Price Range: $8-$100 for individual items, $40-$150 for gift bundles
+- Based on REAL purchase data from happy customers
+
+🤖 GUIDED CONVERSATION FLOW:
+
+📝 STEP 1 - WARM GREETING & AGE:
+If this is the start of conversation, always greet warmly and ask about AGE first:
+"Hello! I'm your Gift Guru, and I'm here to help you find the perfect gift! 🎁
+
+To give you the best recommendations based on our customer data, I'd love to know:
+
+**What's the age of the lucky gift recipient?** (We specialize in gifts for ages 3-12)"
+
+📝 STEP 2 - GENDER (if not provided):
+"Great! And is this gift for a **boy or a girl**? This helps me suggest items that have been most popular with that gender based on our purchase history."
+
+📝 STEP 3 - INTERESTS/CATEGORY (if not provided):
+"Perfect! Now, what kind of things do they enjoy? Are they into:
+- 🎨 **Arts & Crafts** (drawing, coloring, creating)
+- 🧸 **Toys** (games, building, imaginative play)  
+- 📚 **Books** (reading, stories, learning)
+- 📱 **Electronics** (gadgets, tech toys)
+- 👕 **Clothes** (fashion, accessories) 
+- ⚽ **Sports** (active play, outdoor activities)
+
+Or feel free to tell me about their hobbies and interests!"
+
+📝 STEP 4 - BUDGET (if not provided):
+"Excellent! Last question - **what's your budget range?**
+- 💚 **Budget-friendly**: $8-$25 (great individual items)
+- 💙 **Mid-range**: $25-$60 (popular choices) 
+- 💜 **Premium**: $60-$100 (special individual items)
+- 🎁 **Gift Bundle**: $40-$150 (curated combinations)
+
+This helps me focus on options that give you the best value!"
+
+🎯 INFORMATION GATHERING RULES:
+
+✅ **ALWAYS ASK FOR MISSING INFO**: If customer hasn't provided age, gender, interests, or budget - ask for it!
+
+✅ **ONE QUESTION AT A TIME**: Don't overwhelm - ask for one missing piece of info per response.
+
+✅ **BE ENCOURAGING**: "Great choice!" "Perfect!" "Excellent!" - keep it positive.
+
+✅ **EXPLAIN WHY YOU'RE ASKING**: "This helps me suggest items that have been most popular..." 
+
+✅ **OFFER OPTIONS**: Give specific choices when asking about interests/categories.
+
+🎯 RECOMMENDATION PHASE (when you have enough info):
+
+When you have AT LEAST age + gender + (interests OR budget), then provide recommendations:
+
+"Based on our customer data, here are some fantastic options that have been super popular with [age]-year-old [gender]s who love [interest/category]:
+
+[Explain why these work well with specific data insights]
+
+Would you like to know more about any of these, or would you prefer to see options in a different category or price range?"
+
+🎯 CONVERSATION STYLE:
+
+✅ **Friendly & Enthusiastic**: Use emojis, exclamation points, positive language
+✅ **Data-Driven**: "Based on our customer data..." "This has been popular with..."
+✅ **Helpful**: Always explain WHY you're asking questions  
+✅ **Patient**: Guide them step by step, don't rush
+✅ **Personal**: "I'd love to help you find..." "Let me suggest..."
+
+❌ **NEVER**:
+- Overwhelm with too many questions at once
+- Mention specific product names (let recommendations handle that)
+- Skip the information gathering process
+- Give recommendations without enough info
+
+🎯 EXAMPLES:
+
+**New Customer:**
+"Hello! I'm your Gift Guru, and I'm excited to help you find the perfect gift! 🎁 To give you the best recommendations, what's the age of the gift recipient? We specialize in ages 3-12!"
+
+**Missing Gender:**
+"Wonderful! A 8-year-old - that's a fun age! Is this gift for a boy or a girl? This helps me suggest items that have been most popular based on our purchase history."
+
+**Missing Interests:**
+"Perfect! Now, what kind of activities does this 8-year-old boy enjoy? Is he into arts & crafts, toys & games, books, electronics, sports, or something else? Tell me about his hobbies!"
+
+**Missing Budget:**
+"Excellent! He sounds creative! What's your budget range? This helps me focus on the best value options: budget-friendly ($8-25), mid-range ($25-60), premium ($60-100), or a special gift bundle ($40-150)?"
+
+**Ready to Recommend:**
+"Perfect! Based on our data, 8-year-old boys who love arts & crafts have given excellent ratings to several items in your budget range. Here's what I'd recommend..."
+
+Remember: Your goal is to gather the 4 key pieces of info (age, gender, interests, budget) through friendly conversation, then provide data-driven recommendations!"""
         
         return prompt
 
@@ -174,72 +217,64 @@ Remember: Be specific, explain your reasoning, and show enthusiasm for helping f
                 time.sleep(wait_time)
 
     def _prepare_messages(self, query, user_id):
-        """Prepare enhanced messages with smart context - SMART UPGRADED"""
+        """Prepare messages with GUIDED CONVERSATION context"""
         contents = []
         
-        # Generate enhanced system prompt
+        # Generate GUIDED system prompt
         system_prompt = self.generate_system_prompt()
         
-        # Add query-specific context intelligence
+        # Analyze conversation state
+        conversation_state = self._analyze_conversation_state(user_id, query)
+        
+        # Add conversation state guidance
         query_lower = query.lower()
         context_hints = []
         
-        # Smart context detection
-        if any(word in query_lower for word in ['year', 'old', 'teen', 'child', 'kid', 'baby', 'toddler']):
-            context_hints.append("🎯 FOCUS: Pay special attention to age appropriateness in recommendations.")
+        # Determine what information we still need
+        missing_info = []
+        if not conversation_state.get('has_age'):
+            missing_info.append("age")
+        if not conversation_state.get('has_gender'):
+            missing_info.append("gender") 
+        if not conversation_state.get('has_interests'):
+            missing_info.append("interests/category")
+        if not conversation_state.get('has_budget'):
+            missing_info.append("budget")
         
-        if any(word in query_lower for word in ['$', 'budget', 'cheap', 'expensive', 'under', 'around', 'cost', 'price']):
-            context_hints.append("💰 FOCUS: Customer has budget constraints - respect their price limits and mention budget compatibility.")
+        if missing_info:
+            context_hints.append(f"🎯 MISSING INFO: Customer hasn't provided {', '.join(missing_info)}. Ask for the MOST IMPORTANT missing piece first.")
         
-        if any(word in query_lower for word in ['love', 'like', 'interest', 'hobby', 'enjoy', 'passion', 'into']):
-            context_hints.append("❤️ FOCUS: Customer mentioned specific interests - match products to these interests and explain connections.")
+        # Check if we can recommend
+        if conversation_state.get('can_recommend'):
+            context_hints.append("✅ ENOUGH INFO: You have enough information to provide recommendations! Proceed with data-driven suggestions.")
         
-        if any(word in query_lower for word in ['birthday', 'christmas', 'graduation', 'wedding', 'anniversary', 'holiday']):
-            context_hints.append("🎉 FOCUS: This is for a specific occasion - recommend appropriate gifts and explain why they're perfect for this event.")
+        # Check conversation stage
+        if conversation_state.get('is_greeting'):
+            context_hints.append("👋 GREETING: This appears to be a new conversation. Start with warm greeting and ask for age.")
         
-        if any(word in query_lower for word in ['son', 'daughter', 'mom', 'dad', 'friend', 'boyfriend', 'girlfriend', 'husband', 'wife']):
-            context_hints.append("👥 FOCUS: Consider the relationship when recommending - some gifts are more appropriate for certain relationships.")
+        # Add context from conversation history
+        history = self.conversation_history.get(user_id, [])
+        if len(history) >= 2:
+            recent_context = []
+            for msg in history[-4:]:  # Last 2 exchanges
+                if msg.get('role') == 'user':
+                    user_text = msg['parts'][0]['text']
+                    recent_context.append(f"Customer said: {user_text}")
+                elif msg.get('role') == 'model':
+                    model_text = msg['parts'][0]['text'][:100]
+                    recent_context.append(f"You said: {model_text}...")
+            
+            if recent_context:
+                context_hints.append(f"📜 CONVERSATION HISTORY:\n" + "\n".join(recent_context[-4:]))
         
-        # Enhanced system content with context intelligence
+        # Enhanced system content
         system_content = system_prompt
         
         if context_hints:
-            system_content += f"\n\n🧠 SMART CONTEXT ALERTS for this specific query:\n" + "\n".join(context_hints)
-            system_content += "\n\nUse these alerts to provide more targeted and relevant recommendations with specific explanations."
+            system_content += f"\n\n🧠 CONVERSATION GUIDANCE for this interaction:\n" + "\n".join(context_hints)
         
-        # Add conversation history context if available
-        history = self.conversation_history.get(user_id, [])
-        if len(history) >= 2:  # If there's previous conversation
-            recent_context = []
-            context_summary = []
-            
-            # Analyze recent conversation for persistent context
-            for msg in history[-6:]:  # Last 3 exchanges
-                if msg.get('role') == 'user':
-                    user_text = msg['parts'][0]['text']
-                    recent_context.append(f"Customer previously said: {user_text}")
-                    
-                    # Extract key context from previous messages
-                    if any(word in user_text.lower() for word in ['year', 'old', 'age']):
-                        context_summary.append("Age context mentioned previously")
-                    if any(word in user_text.lower() for word in ['budget', '$', 'cost', 'price']):
-                        context_summary.append("Budget discussed previously")
-                    if any(word in user_text.lower() for word in ['love', 'like', 'interest']):
-                        context_summary.append("Interests shared previously")
-                elif msg.get('role') == 'model':
-                    model_text = msg['parts'][0]['text'][:150]  # Truncate for brevity
-                    recent_context.append(f"You previously responded: {model_text}...")
-            
-            if recent_context:
-                system_content += f"\n\n💬 CONVERSATION CONTEXT:\n" + "\n".join(recent_context[-4:])  # Last 2 exchanges
-                
-                if context_summary:
-                    system_content += f"\n\n📝 KEY CONTEXT TO REMEMBER: {', '.join(set(context_summary))}"
-                
-                system_content += "\n\nRemember this context when responding to build on the conversation naturally and avoid asking for information already provided."
-        
-        # Combine everything for the API call
-        combined_message = f"{system_content}\n\n👤 CUSTOMER'S CURRENT QUESTION: {query}"
+        # Add current query context
+        combined_message = f"{system_content}\n\n👤 CUSTOMER'S MESSAGE: {query}\n\n🎯 YOUR RESPONSE STRATEGY: Follow the guided conversation flow. Ask for missing information step by step, or provide recommendations if you have enough info!"
         
         contents.append({
             "role": "user",
@@ -247,6 +282,85 @@ Remember: Be specific, explain your reasoning, and show enthusiasm for helping f
         })
         
         return contents
+
+    def _analyze_conversation_state(self, user_id, current_query):
+        """Analyze what information we have collected so far"""
+        state = {
+            'has_age': False,
+            'has_gender': False, 
+            'has_interests': False,
+            'has_budget': False,
+            'can_recommend': False,
+            'is_greeting': False
+        }
+        
+        # Get conversation history
+        history = self.conversation_history.get(user_id, [])
+        
+        # Check if this is a greeting (new conversation or simple hello)
+        if len(history) == 0 or current_query.lower().strip() in ['hi', 'hello', 'hey', 'help', 'start']:
+            state['is_greeting'] = True
+            return state
+        
+        # Combine all user messages to analyze
+        all_user_text = current_query.lower()
+        for msg in history:
+            if msg.get('role') == 'user':
+                all_user_text += " " + msg['parts'][0]['text'].lower()
+        
+        # Check for age information
+        import re
+        age_patterns = [
+            r'(\d+)\s*(?:year|yr)s?\s*old',
+            r'age\s*(\d+)',
+            r'(\d+)[- ]year[- ]old',
+            r'\b([3-9]|1[0-2])\b'  # Ages 3-12
+        ]
+        
+        for pattern in age_patterns:
+            if re.search(pattern, all_user_text):
+                age_match = re.search(pattern, all_user_text)
+                if age_match:
+                    age = int(age_match.group(1))
+                    if 3 <= age <= 12:
+                        state['has_age'] = True
+                        break
+        
+        # Check for gender information  
+        gender_keywords = ['boy', 'girl', 'male', 'female', 'son', 'daughter', 'he', 'she', 'his', 'her']
+        if any(keyword in all_user_text for keyword in gender_keywords):
+            state['has_gender'] = True
+        
+        # Check for interests/category information
+        interest_keywords = [
+            'art', 'craft', 'drawing', 'painting', 'creative',
+            'toy', 'game', 'play', 'building', 
+            'book', 'read', 'story', 'learning',
+            'electronic', 'tech', 'gadget', 'device',
+            'clothes', 'fashion', 'dress', 'wear',
+            'sport', 'active', 'outdoor', 'exercise',
+            'love', 'like', 'enjoy', 'into', 'hobby', 'interest'
+        ]
+        if any(keyword in all_user_text for keyword in interest_keywords):
+            state['has_interests'] = True
+        
+        # Check for budget information
+        budget_patterns = [
+            r'\$\d+',
+            r'\d+\s*dollar',
+            r'budget', 'cheap', 'expensive', 'price', 'cost',
+            r'under', 'below', 'around', 'between', 'within'
+        ]
+        if any(re.search(pattern, all_user_text) for pattern in budget_patterns):
+            state['has_budget'] = True
+        
+        # Determine if we can recommend
+        # Need at least: age + gender + (interests OR budget)
+        if state['has_age'] and state['has_gender'] and (state['has_interests'] or state['has_budget']):
+            state['can_recommend'] = True
+        
+        print(f"🔍 CONVERSATION STATE: {state}")
+        return state
 
     def _call_gemini_api(self, messages):
         """Call Gemini API with proper format"""
@@ -261,17 +375,17 @@ Remember: Be specific, explain your reasoning, and show enthusiasm for helping f
         payload = {
             "contents": messages,
             "generationConfig": {
-                "temperature": 0.8,  # Slightly more creative for better conversation
+                "temperature": 0.8,  # Friendly and engaging
                 "topK": 40,
                 "topP": 0.95,
-                "maxOutputTokens": 400,  # Allow longer responses for better explanations
+                "maxOutputTokens": 350,  # Enough for guided questions
             }
         }
         
         headers = {"Content-Type": "application/json"}
         
         try:
-            print(f"🔄 Calling Smart Gemini API...")
+            print(f"🔄 Calling GUIDED Gemini API...")
             response = requests.post(url, headers=headers, json=payload, timeout=15)
             
             # Update last API call time
@@ -289,7 +403,7 @@ Remember: Be specific, explain your reasoning, and show enthusiasm for helping f
                 raise RuntimeError(f"API_ERROR_{response.status_code}")
             
             data = response.json()
-            print("✅ Smart Gemini API response received successfully")
+            print("✅ GUIDED Gemini API response received successfully")
             return data
             
         except requests.exceptions.Timeout:
@@ -303,7 +417,7 @@ Remember: Be specific, explain your reasoning, and show enthusiasm for helping f
             raise RuntimeError(f"API_ERROR: {str(e)}")
 
     def process_query(self, query, user_id="default"):
-        """Process a user query with smart context analysis - SMART UPGRADED"""
+        """Process query with GUIDED CONVERSATION intelligence"""
         # Ensure product data is loaded
         if self._lazy_product_data_load:
             if not self.update_product_data():
@@ -313,7 +427,10 @@ Remember: Be specific, explain your reasoning, and show enthusiasm for helping f
         if user_id not in self.conversation_history:
             self.conversation_history[user_id] = []
         
-        # Prepare enhanced messages with smart context
+        # Analyze conversation state
+        conversation_state = self._analyze_conversation_state(user_id, query)
+        
+        # Prepare enhanced messages with GUIDED context
         messages = self._prepare_messages(query, user_id)
         
         try:
@@ -326,65 +443,46 @@ Remember: Be specific, explain your reasoning, and show enthusiasm for helping f
             else:
                 return self._generate_error_response("Invalid API response")
             
-            # Update conversation history with smart management
+            # Update conversation history
             self.conversation_history[user_id].append({"role": "user", "parts": [{"text": query}]})
             self.conversation_history[user_id].append({"role": "model", "parts": [{"text": response_text}]})
             
-            # Keep conversation history manageable (last 12 messages = 6 exchanges)
+            # Keep conversation history manageable
             if len(self.conversation_history[user_id]) > 12:
                 self.conversation_history[user_id] = self.conversation_history[user_id][-12:]
             
-            # Get SMART recommendations using upgraded recommender
+            # Get recommendations ONLY if we have enough information
             recommendations = []
-            if self.recommender:
+            if conversation_state.get('can_recommend') and self.recommender:
                 try:
                     history = self.conversation_history.get(user_id, [])
                     recommendations = self.recommender.get_recommendations(query, history)
                     
-                    # ADD THIS DEBUG SECTION
-                    print(f"\n🔍 DEBUG RECOMMENDATIONS for query: '{query}'")
-                    print(f"📊 Analysis results:")
-                    analysis = self.recommender.analyze_query_smart(query)
-                    for key, value in analysis.items():
-                        if value:
-                            print(f"   {key}: {value}")
+                    print(f"🎯 Generated {len(recommendations)} GUIDED recommendations")
                     
-                    print(f"\n🎯 Top recommendations:")
-                    for i, rec in enumerate(recommendations):
-                        print(f"   {i+1}. {rec['name']} (${rec['price']}) - Score: {rec.get('smart_score', 'N/A')}")
-                        if 'relevance_scores' in rec:
-                            print(f"      Reasons: {rec['relevance_scores']}")
-                    print("="*50)
-                    # END DEBUG SECTION
-                    
-                    print(f"🎯 Generated {len(recommendations)} SMART recommendations with explanations")
-                    
-                    # Debug: Print smart scores for monitoring
-                    for rec in recommendations:
-                        if 'smart_score' in rec:
-                            print(f"   - {rec['name']}: Score {rec['smart_score']}, Reasons: {rec.get('relevance_scores', {}).get('strengths', 'N/A')}")
-                            
                 except Exception as e:
-                    print(f"Error getting smart recommendations: {e}")
-                    recommendations = self._get_fallback_recommendations()
+                    print(f"Error getting GUIDED recommendations: {e}")
+                    recommendations = []
             
             return {
                 "response": response_text,
                 "recommendations": recommendations,
-                "smart_features": True,  # Indicate smart features are active
-                "conversation_length": len(self.conversation_history[user_id])
+                "conversation_state": conversation_state,
+                "guided_conversation": True,
+                "conversation_length": len(self.conversation_history[user_id]),
+                "intelligence_level": "GUIDED_CONVERSATION"
             }
             
         except Exception as e:
-            print(f"Error in smart process_query: {e}")
+            print(f"Error in GUIDED process_query: {e}")
             return self._generate_error_response(f"Error processing query: {str(e)}")
 
     def _get_fallback_recommendations(self):
-        """Get basic recommendations when smart recommender fails"""
+        """Get basic recommendations when enhanced recommender fails"""
         try:
             recommendations = []
-            # Get mix of products and combos for variety
-            for product in self.products[:2]:
+            # Prioritize individual products for fallback
+            for product in self.products[:3]:
                 recommendations.append({
                     "id": product["id"],
                     "name": product["name"],
@@ -392,18 +490,7 @@ Remember: Be specific, explain your reasoning, and show enthusiasm for helping f
                     "image": product["image"],
                     "description": product["description"],
                     "type": "product",
-                    "relevance_scores": {"suggestion": "Popular item"}
-                })
-            
-            for combo in self.combos[:1]:
-                recommendations.append({
-                    "id": combo["id"],
-                    "name": combo["name"],
-                    "price": combo["price"],
-                    "image": combo["image"],
-                    "description": combo["description"],
-                    "type": "combo",
-                    "relevance_scores": {"suggestion": "Gift bundle"}
+                    "relevance_scores": {"suggestion": "Popular choice"}
                 })
             
             return recommendations
@@ -411,28 +498,28 @@ Remember: Be specific, explain your reasoning, and show enthusiasm for helping f
             return []
 
     def _generate_error_response(self, error_message="An error occurred"):
-        """Generate a standardized error response"""
-        print(f"Error in smart chatbot: {error_message}")
+        """Generate enhanced error response"""
+        print(f"Error in GUIDED chatbot: {error_message}")
         
-        # Try to get fallback recommendations
         recommendations = self._get_fallback_recommendations()
             
         return {
-            "response": "I'm sorry, I'm having some technical difficulties. Here are some popular products you might like:",
+            "response": "I'm sorry, I'm having some technical difficulties. Here are some popular products from our catalog:",
             "recommendations": recommendations,
-            "error": error_message
+            "error": error_message,
+            "guided_conversation": True
         }
 
     def reset_conversation(self, user_id="default"):
         """Reset the conversation history for a user"""
         if user_id in self.conversation_history:
             self.conversation_history[user_id] = []
-        return {"success": True, "message": "Conversation reset successfully"}
+        return {"success": True, "message": "Conversation reset successfully", "guided_conversation": True}
 
-# Create singleton instance with proper error handling
+# Create singleton instance with enhanced error handling
 try:
     gemini_chatbot_service = GeminiChatbotService()
-    print("✅ Smart Gemini chatbot service singleton created successfully")
+    print("✅ GUIDED CONVERSATION Gemini chatbot service singleton created successfully")
 except Exception as e:
-    print(f"❌ Failed to create Gemini chatbot service: {e}")
+    print(f"❌ Failed to create GUIDED Gemini chatbot service: {e}")
     gemini_chatbot_service = None
