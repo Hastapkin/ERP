@@ -410,24 +410,24 @@ class GeminiChatbotService:
         
         return f"""You are Gift Guru - an expert gift consultant who helps customers find perfect gifts.
 
-🎯 YOUR MISSION: Collect exactly 4 pieces of information in order:
+                🎯 YOUR MISSION: Collect exactly 4 pieces of information in order:
 
-1. **AGE** (3-12 years old)
-2. **GENDER** (male/female) 
-3. **CATEGORY** from: {category_list}
-4. **BUDGET** (amount or range)
+                1. **AGE** (3-12 years old)
+                2. **GENDER** (male/female) 
+                3. **CATEGORY** from: {category_list}
+                4. **BUDGET** (amount or range)
 
-📊 OUR STORE: {len(self.products)} products, Ages 3-12, Price range $8-$100
+                📊 OUR STORE: {len(self.products)} products, Ages 3-12, Price range $8-$100
 
-🤖 CONVERSATION RULES:
+                🤖 CONVERSATION RULES:
 
-**If missing AGE:** "What's the age of the gift recipient? (We specialize in ages 3-12)"
-**If missing GENDER:** "Great! A [age]-year-old. Is this for a boy or a girl?"
-**If missing CATEGORY:** "Perfect! A [age]-year-old [boy/girl]. What does this child enjoy? Choose from: {category_list}"
-**If missing BUDGET:** "Excellent! What's your budget range? Examples: 'under $30', 'around $50', 'between $20-40'"
-**If have ALL 4:** "Perfect! I'm finding the best matching products from our catalog..."
+                **If missing AGE:** "What's the age of the gift recipient? (We specialize in ages 3-12)"
+                **If missing GENDER:** "Great! A [age]-year-old. Is this for a boy or a girl?"
+                **If missing CATEGORY:** "Perfect! A [age]-year-old [boy/girl]. What does this child enjoy? Choose from: {category_list}"
+                **If missing BUDGET:** "Excellent! What's your budget range? Examples: 'under $30', 'around $50', 'between $20-40'"
+                **If have ALL 4:** "Perfect! I'm finding the best matching products from our catalog..."
 
-🎯 STYLE: Be enthusiastic, ask ONE question at a time, keep responses short and focused."""
+                🎯 STYLE: Be enthusiastic, ask ONE question at a time, keep responses short and focused."""
 
     def _wait_for_rate_limit(self):
         """Wait for rate limit"""
@@ -763,20 +763,20 @@ class GeminiChatbotService:
         if len(query.strip()) < 3 or query.lower().strip() in ['hi', 'hello', 'hey', 'start']:
             greeting_response = """Hello! I'm your Gift Guru! 🎁
 
-I'll help you find the perfect gift based on 4 key factors:
-👶 **Age** (3-12 years - our specialty!)
-👦👧 **Gender** (male/female)
-📱 **Category** preferences
-💰 **Budget**
+            I'll help you find the perfect gift based on 4 key factors:
+            👶 **Age** (3-12 years - our specialty!)
+            👦👧 **Gender** (male/female)
+            📱 **Category** preferences
+            💰 **Budget**
 
-Let's start: **What's the age of the gift recipient?**"""
+            Let's start: **What's the age of the gift recipient?**"""
             
             return {
                 "response": greeting_response,
                 "recommendations": [],
                 "conversation_stage": "greeting"
             }
-        
+
         # STEP 1: Extract info from current message
         new_info = self.analyze_message_comprehensively(query)
         
@@ -818,14 +818,14 @@ Let's start: **What's the age of the gift recipient?**"""
                 context_str = f"No products found for: Age {state['age']}, Gender {state['gender']}, Category {state['category']}, Budget {state['budget']}"
                 system_prompt = f"""The user has provided all needed information but we found NO products matching their criteria.
 
-{context_str}
+                {context_str}
 
-Respond with empathy and suggest they try:
-1. A different category 
-2. Adjusting their budget
-3. Asking for popular products for their age group
+                Respond with empathy and suggest they try:
+                1. A different category 
+                2. Adjusting their budget
+                3. Asking for popular products for their age group
 
-Be helpful and understanding. Do NOT mention specific products since none were found."""
+                Be helpful and understanding. Do NOT mention specific products since none were found."""
                 
                 messages = [{
                     "role": "user",
