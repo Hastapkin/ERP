@@ -858,7 +858,6 @@ footer {
 }
 
 .chatbot-section h2::before {
-    content: '🤖';
     font-size: 1.3em;
 }
 

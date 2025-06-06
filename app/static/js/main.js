@@ -1,6 +1,6 @@
-// Enhanced chatbot functionality with progress tracking
+// Enhanced chatbot functionality with improved UI and message formatting
 document.addEventListener('DOMContentLoaded', function() {
-    console.log("DOM loaded, initializing Enhanced Chatbot with Progress Tracking...");
+    console.log("DOM loaded, initializing Enhanced Chatbot with Improved UI...");
     
     window.chatbotState = {
         isTyping: false,
@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeEnhancedChatbot();
     initializeFilters();
     
-    console.log("Enhanced Chatbot with Progress Tracking initialized");
+    console.log("Enhanced Chatbot with Improved UI initialized");
 });
 
 function initializeEnhancedChatbot() {
@@ -42,12 +42,12 @@ function initializeEnhancedChatbot() {
     });
     
     addResetButton();
-    initializeProgressIndicator();
+    initializeImprovedProgressIndicator();
     console.log("Enhanced chatbot initialized");
 }
 
-function initializeProgressIndicator() {
-    console.log("Initializing progress indicator...");
+function initializeImprovedProgressIndicator() {
+    console.log("Initializing improved progress indicator...");
     
     // Create progress indicator if it doesn't exist
     let progressContainer = document.getElementById('progress-indicator');
@@ -63,205 +63,350 @@ function initializeProgressIndicator() {
         }
     }
     
-    // Create progress steps
+    // Create improved progress steps
     progressContainer.innerHTML = `
-        <div class="how-it-works">
-            <h4>📋 How It Works:</h4>
-            <div class="progress-steps">
-                <div class="progress-step" data-step="age">
-                    <div class="step-number">1</div>
-                    <div class="step-info">
-                        <div class="step-title">Age</div>
-                        <div class="step-subtitle">3-12 years old</div>
+        <div class="how-it-works-improved">
+            <div class="progress-header">
+                <span class="progress-icon">📋</span>
+                <span class="progress-title">How It Works</span>
+            </div>
+            <div class="progress-steps-improved">
+                <div class="progress-step-improved" data-step="age">
+                    <div class="step-circle">
+                        <span class="step-number">1</span>
+                        <div class="step-checkmark">✓</div>
+                    </div>
+                    <div class="step-content">
+                        <div class="step-label">Age</div>
+                        <div class="step-desc">3-12 years old</div>
                     </div>
                 </div>
-                <div class="progress-step" data-step="gender">
-                    <div class="step-number">2</div>
-                    <div class="step-info">
-                        <div class="step-title">Gender</div>
-                        <div class="step-subtitle">Boy or Girl</div>
+                
+                <div class="progress-connector"></div>
+                
+                <div class="progress-step-improved" data-step="gender">
+                    <div class="step-circle">
+                        <span class="step-number">2</span>
+                        <div class="step-checkmark">✓</div>
+                    </div>
+                    <div class="step-content">
+                        <div class="step-label">Gender</div>
+                        <div class="step-desc">Boy or Girl</div>
                     </div>
                 </div>
-                <div class="progress-step" data-step="interests">
-                    <div class="step-number">3</div>
-                    <div class="step-info">
-                        <div class="step-title">Interests</div>
-                        <div class="step-subtitle">What they love</div>
+                
+                <div class="progress-connector"></div>
+                
+                <div class="progress-step-improved" data-step="interests">
+                    <div class="step-circle">
+                        <span class="step-number">3</span>
+                        <div class="step-checkmark">✓</div>
+                    </div>
+                    <div class="step-content">
+                        <div class="step-label">Interests</div>
+                        <div class="step-desc">What they love</div>
                     </div>
                 </div>
-                <div class="progress-step" data-step="budget">
-                    <div class="step-number">4</div>
-                    <div class="step-info">
-                        <div class="step-title">Budget</div>
-                        <div class="step-subtitle">Your price range</div>
+                
+                <div class="progress-connector"></div>
+                
+                <div class="progress-step-improved" data-step="budget">
+                    <div class="step-circle">
+                        <span class="step-number">4</span>
+                        <div class="step-checkmark">✓</div>
+                    </div>
+                    <div class="step-content">
+                        <div class="step-label">Budget</div>
+                        <div class="step-desc">Your price range</div>
                     </div>
                 </div>
-                <div class="progress-step" data-step="confirm">
-                    <div class="step-number">✓</div>
-                    <div class="step-info">
-                        <div class="step-title">Confirm</div>
-                        <div class="step-subtitle">Get recommendations</div>
+                
+                <div class="progress-connector"></div>
+                
+                <div class="progress-step-improved" data-step="confirm">
+                    <div class="step-circle">
+                        <span class="step-number">✓</span>
+                        <div class="step-checkmark">✓</div>
+                    </div>
+                    <div class="step-content">
+                        <div class="step-label">Recommendations</div>
+                        <div class="step-desc">Perfect matches</div>
                     </div>
                 </div>
             </div>
         </div>
     `;
     
-    // Add CSS styles
-    addProgressStyles();
+    // Add improved CSS styles
+    addImprovedProgressStyles();
 }
 
-function addProgressStyles() {
+function addImprovedProgressStyles() {
     // Check if styles already added
-    if (document.getElementById('progress-styles')) return;
+    if (document.getElementById('improved-progress-styles')) return;
     
     const style = document.createElement('style');
-    style.id = 'progress-styles';
+    style.id = 'improved-progress-styles';
     style.textContent = `
         .progress-indicator {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            border-radius: 15px;
-            padding: 20px;
-            margin: 15px 0;
-            border: 2px solid #e6e6e6;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 16px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 1px solid rgba(74, 137, 220, 0.15);
+            box-shadow: 0 4px 20px rgba(74, 137, 220, 0.08);
         }
         
-        .how-it-works h4 {
-            margin: 0 0 15px 0;
+        .how-it-works-improved {
+            width: 100%;
+        }
+        
+        .progress-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(74, 137, 220, 0.1);
+        }
+        
+        .progress-icon {
+            font-size: 1.2em;
+        }
+        
+        .progress-title {
             color: #4a89dc;
-            font-size: 1em;
+            font-size: 1.1em;
             font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
         
-        .progress-steps {
+        .progress-steps-improved {
             display: flex;
+            align-items: center;
             justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        
-        .progress-step {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 10px;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-            min-width: 80px;
+            width: 100%;
             position: relative;
         }
         
-        .progress-step:not(:last-child)::after {
-            content: '→';
-            position: absolute;
-            right: -15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #ccc;
-            font-size: 1.2em;
-            z-index: 1;
+        .progress-step-improved {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            background: white;
+            padding: 8px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            min-width: 80px;
         }
         
-        .step-number {
-            width: 30px;
-            height: 30px;
+        .step-circle {
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
-            background: #ddd;
-            color: #666;
+            background: #e9ecef;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
-            font-size: 0.9em;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
+            position: relative;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+        }
+        
+        .step-number {
+            font-size: 1.1em;
+            font-weight: 700;
+            color: #6c757d;
             transition: all 0.3s ease;
         }
         
-        .step-info {
-            text-align: center;
-        }
-        
-        .step-title {
-            font-weight: 600;
-            font-size: 0.85em;
-            color: #333;
-            margin-bottom: 2px;
-        }
-        
-        .step-subtitle {
-            font-size: 0.7em;
-            color: #666;
-            line-height: 1.2;
-        }
-        
-        /* Current step */
-        .progress-step.current {
-            background: rgba(74, 137, 220, 0.1);
-            border: 2px solid #4a89dc;
-        }
-        
-        .progress-step.current .step-number {
-            background: #4a89dc;
+        .step-checkmark {
+            position: absolute;
+            font-size: 1.4em;
             color: white;
-            animation: pulse 2s infinite;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.3s ease;
         }
         
-        .progress-step.current .step-title {
+        .step-content {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .step-label {
+            font-size: 0.9em;
+            font-weight: 600;
+            color: #495057;
+            transition: color 0.3s ease;
+        }
+        
+        .step-desc {
+            font-size: 0.75em;
+            color: #6c757d;
+            line-height: 1.3;
+        }
+        
+        .progress-connector {
+            flex: 1;
+            height: 3px;
+            background: linear-gradient(90deg, #e9ecef 0%, #dee2e6 100%);
+            margin: 0 -8px;
+            border-radius: 2px;
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+        
+        /* Current step styles */
+        .progress-step-improved.current .step-circle {
+            background: #4a89dc;
+            border-color: rgba(74, 137, 220, 0.3);
+            box-shadow: 0 0 0 4px rgba(74, 137, 220, 0.15);
+            animation: pulse-current 2s infinite;
+        }
+        
+        .progress-step-improved.current .step-number {
+            color: white;
+        }
+        
+        .progress-step-improved.current .step-label {
             color: #4a89dc;
             font-weight: 700;
         }
         
-        /* Completed step */
-        .progress-step.completed {
-            background: rgba(76, 217, 100, 0.1);
+        /* Completed step styles */
+        .progress-step-improved.completed .step-circle {
+            background: #28a745;
+            border-color: rgba(40, 167, 69, 0.3);
         }
         
-        .progress-step.completed .step-number {
-            background: #4cd964;
-            color: white;
+        .progress-step-improved.completed .step-number {
+            opacity: 0;
+            transform: scale(0);
         }
         
-        .progress-step.completed .step-title {
-            color: #4cd964;
+        .progress-step-improved.completed .step-checkmark {
+            opacity: 1;
+            transform: scale(1);
         }
         
-        /* Final confirmation step */
-        .progress-step.final-completed {
-            background: rgba(76, 217, 100, 0.15);
-            border: 2px solid #4cd964;
+        .progress-step-improved.completed .step-label {
+            color: #28a745;
         }
         
-        .progress-step.final-completed .step-number {
-            background: #4cd964;
-            color: white;
-            font-size: 1.1em;
+        .progress-step-improved.completed + .progress-connector {
+            background: linear-gradient(90deg, #28a745 0%, #20c997 100%);
         }
         
-        @keyframes pulse {
+        /* Final completed step styles */
+        .progress-step-improved.final-completed .step-circle {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            border-color: rgba(40, 167, 69, 0.4);
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        }
+        
+        .progress-step-improved.final-completed .step-label {
+            color: #28a745;
+            font-weight: 700;
+        }
+        
+        @keyframes pulse-current {
             0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+            50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
         
         /* Responsive design */
         @media (max-width: 768px) {
-            .progress-steps {
+            .progress-steps-improved {
                 flex-direction: column;
-                gap: 15px;
+                gap: 16px;
             }
             
-            .progress-step:not(:last-child)::after {
-                content: '↓';
-                right: auto;
-                bottom: -25px;
-                top: auto;
-                transform: none;
+            .progress-connector {
+                height: 40px;
+                width: 3px;
+                margin: -8px 0;
             }
+            
+            .progress-step-improved {
+                flex-direction: row;
+                text-align: left;
+                width: 100%;
+                max-width: 280px;
+                padding: 12px;
+                background: rgba(255, 255, 255, 0.8);
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(74, 137, 220, 0.1);
+            }
+            
+            .step-circle {
+                margin-bottom: 0;
+                margin-right: 16px;
+                flex-shrink: 0;
+            }
+            
+            .step-content {
+                text-align: left;
+            }
+        }
+        
+        /* Enhanced chatbot message styles */
+        .bot-message {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border: 1px solid rgba(74, 137, 220, 0.1);
+            border-radius: 20px 20px 20px 6px;
+            padding: 20px;
+            margin: 16px 0;
+            box-shadow: 0 4px 15px rgba(74, 137, 220, 0.08);
+            position: relative;
+        }
+        
+        .bot-message::before {
+            content: '🤖';
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            font-size: 1.2em;
+            opacity: 0.7;
+        }
+        
+        .bot-message p {
+            margin: 0 0 12px 32px;
+            line-height: 1.6;
+            color: #495057;
+        }
+        
+        .bot-message p:last-child {
+            margin-bottom: 0;
+        }
+        
+        .bot-message .message-highlight {
+            background: linear-gradient(135deg, rgba(74, 137, 220, 0.1) 0%, rgba(74, 137, 220, 0.05) 100%);
+            padding: 8px 12px;
+            border-radius: 8px;
+            border-left: 3px solid #4a89dc;
+            margin: 12px 0;
+        }
+        
+        .user-message {
+            background: linear-gradient(135deg, #4a89dc 0%, #5b9be0 100%);
+            border-radius: 20px 20px 6px 20px;
+            padding: 16px 20px;
+            margin: 16px 0;
+            box-shadow: 0 4px 15px rgba(74, 137, 220, 0.25);
+            position: relative;
+        }
+        
+        .user-message p {
+            margin: 0;
+            color: white;
+            font-weight: 500;
         }
     `;
     
@@ -269,9 +414,9 @@ function addProgressStyles() {
 }
 
 function updateProgressIndicator(extractedInfo, recommendations) {
-    console.log("Updating progress indicator:", extractedInfo, "Has recommendations:", recommendations && recommendations.length > 0);
+    console.log("Updating improved progress indicator:", extractedInfo, "Has recommendations:", recommendations && recommendations.length > 0);
     
-    const steps = document.querySelectorAll('.progress-step');
+    const steps = document.querySelectorAll('.progress-step-improved');
     
     // Map extracted info to progress steps
     const infoMapping = {
@@ -328,6 +473,34 @@ function updateProgressIndicator(extractedInfo, recommendations) {
         incompleteStep.classList.add('current');
         console.log(`→ Current step: ${incompleteStep.dataset.step}`);
     }
+}
+
+function formatBotMessage(message) {
+    "Format bot message to clean up markdown and improve readability"
+    
+    // Remove excessive asterisks and clean up formatting
+    let formattedMessage = message
+        // Remove double asterisks (bold markdown)
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        // Remove single asterisks (italic markdown) 
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        // Clean up any remaining asterisks
+        .replace(/\*/g, '')
+        // Convert numbered lists to proper formatting
+        .replace(/(\d+\.\s)/g, '<br>$1')
+        // Convert bullet points
+        .replace(/^•\s/gm, '<br>• ')
+        // Clean up multiple line breaks
+        .replace(/\n{3,}/g, '\n\n')
+        // Convert line breaks to proper spacing
+        .replace(/\n/g, '<br>')
+        // Clean up extra spaces
+        .replace(/\s{2,}/g, ' ')
+        // Fix spacing around HTML tags
+        .replace(/<br>\s*<br>/g, '<br>')
+        .replace(/^<br>/, '');
+    
+    return formattedMessage;
 }
 
 function sendChatMessage() {
@@ -402,12 +575,14 @@ function resetConversation() {
     
     chatMessages.innerHTML = `
         <div class="bot-message">
-            <p><strong>Hello! I'm your Gift Guru! 🎁</strong></p>
+            <p><strong>Hello! I'm your Gift Guru!</strong></p>
             <p>I'll help you find the perfect gift based on 4 key factors:</p>
-            <p>👶 <strong>Age</strong> (3-12 years)<br>
-               👦👧 <strong>Gender</strong> (male/female)<br>
-               📱 <strong>Category</strong> preferences<br>
-               💰 <strong>Budget</strong></p>
+            <div class="message-highlight">
+                <p><strong>Age:</strong> 3-12 years (our specialty!)<br>
+                <strong>Gender:</strong> Boy or Girl<br>
+                <strong>Interests:</strong> What they love<br>
+                <strong>Budget:</strong> Your price range</p>
+            </div>
             <p><strong>Let's start: What's the age of the gift recipient?</strong></p>
         </div>
     `;
@@ -416,13 +591,13 @@ function resetConversation() {
     if (suggestions) suggestions.style.display = 'block';
     
     // Reset progress indicator
-    const steps = document.querySelectorAll('.progress-step');
+    const steps = document.querySelectorAll('.progress-step-improved');
     steps.forEach(step => {
         step.classList.remove('current', 'completed', 'final-completed');
     });
     
     // Set first step as current
-    const firstStep = document.querySelector('.progress-step[data-step="age"]');
+    const firstStep = document.querySelector('.progress-step-improved[data-step="age"]');
     if (firstStep) {
         firstStep.classList.add('current');
     }
@@ -442,13 +617,25 @@ function addResetButton() {
     const resetButton = document.createElement('button');
     resetButton.innerHTML = '🔄 Start Over';
     resetButton.style.cssText = `
-        position: absolute; top: 10px; right: 10px;
-        padding: 5px 10px; background: #6c757d; color: white;
-        border: none; border-radius: 15px; font-size: 0.8em;
-        cursor: pointer; z-index: 10;
+        position: absolute; top: 12px; right: 12px;
+        padding: 8px 14px; background: rgba(108, 117, 125, 0.9);
+        color: white; border: none; border-radius: 20px; 
+        font-size: 0.8em; font-weight: 500; cursor: pointer; 
+        z-index: 10; backdrop-filter: blur(10px);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        transition: all 0.3s ease;
     `;
     
     resetButton.addEventListener('click', resetConversation);
+    resetButton.addEventListener('mouseenter', function() {
+        this.style.background = 'rgba(90, 98, 104, 0.9)';
+        this.style.transform = 'scale(1.05)';
+    });
+    resetButton.addEventListener('mouseleave', function() {
+        this.style.background = 'rgba(108, 117, 125, 0.9)';
+        this.style.transform = 'scale(1)';
+    });
+    
     chatMessages.style.position = 'relative';
     chatMessages.appendChild(resetButton);
 }
@@ -458,10 +645,12 @@ function addTypingIndicator() {
     const typingElement = document.createElement('div');
     typingElement.className = 'bot-message typing-indicator';
     typingElement.innerHTML = `
-        <div class="typing-dots">
-            <span></span><span></span><span></span>
+        <div style="display: flex; align-items: center; gap: 12px; margin-left: 32px;">
+            <div class="typing-dots">
+                <span></span><span></span><span></span>
+            </div>
+            <p style="margin: 0; color: #6c757d; font-style: italic;">Gift Advisor is thinking...</p>
         </div>
-        <p style="margin-left: 10px; color: #666;">Gift Advisor is thinking...</p>
     `;
     chatMessages.appendChild(typingElement);
     chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -485,115 +674,16 @@ function addBotMessage(message) {
     const chatMessages = document.getElementById('chatMessages');
     const messageElement = document.createElement('div');
     messageElement.className = 'bot-message';
-    messageElement.innerHTML = `<p>${escapeHtml(message)}</p>`;
+    
+    // Format the message to clean up markdown
+    const formattedMessage = formatBotMessage(message);
+    messageElement.innerHTML = `<div style="margin-left: 32px;">${formattedMessage}</div>`;
+    
     chatMessages.appendChild(messageElement);
     chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-function showRecommendations(recommendations) {
-    console.log("Showing recommendations");
-    const container = document.getElementById('recommendations');
-    
-    if (!container || !recommendations || recommendations.length === 0) {
-        if (container) container.style.display = 'none';
-        return;
-    }
-    
-    container.innerHTML = '';
-    
-    const header = document.createElement('h3');
-    header.innerHTML = '🎯 Perfect Matches Found!';
-    header.style.cssText = 'margin: 0 0 15px 0; color: #4cd964; font-size: 1.2em; font-weight: 700;';
-    container.appendChild(header);
-    
-    const grid = document.createElement('div');
-    grid.style.cssText = 'display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;';
-    
-    recommendations.forEach(item => {
-        const element = document.createElement('div');
-        element.style.cssText = `
-            background: white; border: 1px solid #e6e6e6; border-radius: 12px;
-            overflow: hidden; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
-        `;
-        
-        element.innerHTML = `
-            <div style="position: relative;">
-                <img src="/static/images/products/${item.image}" alt="${item.name}" 
-                     style="width: 100%; height: 180px; object-fit: cover;"
-                     onerror="this.src='/static/images/products/placeholder.jpg'">
-                <div style="position: absolute; top: 12px; right: 12px; 
-                     background: ${item.type === 'combo' ? '#ff6b6b' : '#4cd964'}; 
-                     color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.8em;">
-                    ${item.type === 'combo' ? 'COMBO' : 'PRODUCT'}
-                </div>
-            </div>
-            <div style="padding: 15px;">
-                <h4 style="margin: 0 0 8px 0; color: #333;">${item.name}</h4>
-                <p style="color: #ff6b6b; font-weight: bold; margin: 8px 0; font-size: 1.2em;">
-                    $${item.price.toFixed(2)}
-                </p>
-                <div style="background: #f8f9fa; padding: 8px; border-radius: 6px; margin: 10px 0;">
-                    <small style="color: #666;">
-                        Score: ${item.relevance_scores.match_score || 'N/A'}<br>
-                        ${item.relevance_scores.reason || 'Recommended'}
-                    </small>
-                </div>
-                <p style="color: #666; font-size: 0.9em; margin: 10px 0;">
-                    ${item.description}
-                </p>
-                <button class="add-to-cart-rec" data-id="${item.id}" data-type="${item.type}"
-                        style="width: 100%; padding: 12px; background: #4cd964; color: white; 
-                               border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
-                    Add to Cart
-                </button>
-            </div>
-        `;
-        
-        grid.appendChild(element);
-    });
-    
-    container.appendChild(grid);
-    
-    // Add event listeners to add-to-cart buttons
-    const addButtons = container.querySelectorAll('.add-to-cart-rec');
-    addButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const itemId = parseInt(this.dataset.id);
-            const itemType = this.dataset.type;
-            
-            const originalText = this.innerHTML;
-            this.innerHTML = 'Adding...';
-            this.disabled = true;
-            
-            addToCart(itemId, itemType).then(() => {
-                this.innerHTML = '✓ Added!';
-                this.style.background = '#28a745';
-                
-                setTimeout(() => {
-                    this.innerHTML = originalText;
-                    this.style.background = '#4cd964';
-                    this.disabled = false;
-                }, 2000);
-            }).catch(() => {
-                this.innerHTML = 'Error';
-                this.style.background = '#dc3545';
-                
-                setTimeout(() => {
-                    this.innerHTML = originalText;
-                    this.style.background = '#4cd964';
-                    this.disabled = false;
-                }, 2000);
-            });
-        });
-    });
-    
-    container.style.display = 'block';
-    setTimeout(() => {
-        container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }, 300);
-}
-
-// Keep all existing cart functionality (initializeCartFunctionality, addToCart, etc.)
+// Keep existing cart functionality and other functions...
 function initializeCartFunctionality() {
     console.log("Initializing cart functionality...");
     
@@ -607,7 +697,7 @@ function initializeCartFunctionality() {
         });
     });
     
-    // Cart page controls
+    // Cart page controls (existing code)
     const decreaseButtons = document.querySelectorAll('.quantity-btn.decrease');
     const increaseButtons = document.querySelectorAll('.quantity-btn.increase');
     const quantityInputs = document.querySelectorAll('.quantity-input');
@@ -691,6 +781,197 @@ function addToCart(productId, productType) {
     });
 }
 
+function showRecommendations(recommendations) {
+    console.log("Showing recommendations");
+    const container = document.getElementById('recommendations');
+    
+    if (!container || !recommendations || recommendations.length === 0) {
+        if (container) container.style.display = 'none';
+        return;
+    }
+    
+    container.innerHTML = '';
+    
+    const header = document.createElement('h3');
+    header.innerHTML = '🎯 Perfect Matches Found!';
+    header.style.cssText = `
+        margin: 0 0 20px 0; 
+        color: #28a745; 
+        font-size: 1.3em; 
+        font-weight: 700;
+        text-align: center;
+        padding: 16px;
+        background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(40, 167, 69, 0.05) 100%);
+        border-radius: 12px;
+        border: 1px solid rgba(40, 167, 69, 0.2);
+    `;
+    container.appendChild(header);
+    
+    const grid = document.createElement('div');
+    grid.style.cssText = 'display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;';
+    
+    recommendations.forEach((item, index) => {
+        const element = document.createElement('div');
+        element.style.cssText = `
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border: 1px solid rgba(74, 137, 220, 0.15);
+            border-radius: 16px;
+            overflow: hidden; 
+            box-shadow: 0 8px 32px rgba(74, 137, 220, 0.12);
+            transition: all 0.3s ease;
+            animation: slideInUp 0.6s ease-out forwards;
+            animation-delay: ${index * 0.1}s;
+            opacity: 0;
+            transform: translateY(20px);
+        `;
+        
+        element.innerHTML = `
+            <div style="position: relative; overflow: hidden;">
+                <img src="/static/images/products/${item.image}" alt="${item.name}" 
+                     style="width: 100%; height: 200px; object-fit: cover; transition: transform 0.3s ease;"
+                     onerror="this.src='/static/images/products/placeholder.jpg'">
+                <div style="position: absolute; top: 16px; right: 16px; 
+                     background: ${item.type === 'combo' ? 'linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)' : 'linear-gradient(135deg, #4a89dc 0%, #3742fa 100%)'}; 
+                     color: white; padding: 6px 14px; border-radius: 20px; font-size: 0.8em;
+                     font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+                     box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                    ${item.type === 'combo' ? 'COMBO' : 'PRODUCT'}
+                </div>
+            </div>
+            <div style="padding: 24px;">
+                <h4 style="margin: 0 0 12px 0; font-size: 1.2em; color: #2c3e50; font-weight: 600; line-height: 1.3;">
+                    ${item.name}
+                </h4>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
+                    <span style="color: #e74c3c; font-weight: 700; font-size: 1.4em;">
+                        ${item.price.toFixed(2)}
+                    </span>
+                    <div style="background: rgba(40, 167, 69, 0.1); padding: 4px 10px; border-radius: 12px; font-size: 0.8em; color: #27ae60; font-weight: 600;">
+                        Score: ${item.relevance_scores.match_score || 'N/A'}
+                    </div>
+                </div>
+                <div style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); padding: 12px; border-radius: 12px; margin: 16px 0; border-left: 4px solid #4a89dc;">
+                    <div style="font-size: 0.85em; color: #495057; font-weight: 500;">
+                        ✨ ${item.relevance_scores.reason || 'Recommended for you'}
+                    </div>
+                </div>
+                <p style="color: #6c757d; font-size: 0.9em; margin: 16px 0; line-height: 1.5;">
+                    ${item.description}
+                </p>
+                <button class="add-to-cart-rec" data-id="${item.id}" data-type="${item.type}"
+                        style="width: 100%; padding: 14px; 
+                               background: linear-gradient(135deg, #28a745 0%, #20c997 100%); 
+                               color: white; border: none; border-radius: 12px; 
+                               font-weight: 600; cursor: pointer; font-size: 0.95em;
+                               transition: all 0.3s ease; display: flex; justify-content: center; 
+                               align-items: center; gap: 10px;
+                               box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);">
+                    <span style="font-size: 1.1em;">🛒</span>
+                    Add to Cart
+                </button>
+            </div>
+        `;
+        
+        // Add hover effects
+        element.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-8px)';
+            this.style.boxShadow = '0 12px 40px rgba(74, 137, 220, 0.18)';
+            const img = this.querySelector('img');
+            img.style.transform = 'scale(1.05)';
+        });
+        
+        element.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+            this.style.boxShadow = '0 8px 32px rgba(74, 137, 220, 0.12)';
+            const img = this.querySelector('img');
+            img.style.transform = 'scale(1)';
+        });
+        
+        grid.appendChild(element);
+    });
+    
+    container.appendChild(grid);
+    
+    // Add keyframe animation
+    if (!document.getElementById('slideInUp-keyframes')) {
+        const keyframes = document.createElement('style');
+        keyframes.id = 'slideInUp-keyframes';
+        keyframes.textContent = `
+            @keyframes slideInUp {
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        `;
+        document.head.appendChild(keyframes);
+    }
+    
+    // Add event listeners to add-to-cart buttons
+    const addButtons = container.querySelectorAll('.add-to-cart-rec');
+    addButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const itemId = parseInt(this.dataset.id);
+            const itemType = this.dataset.type;
+            
+            const originalText = this.innerHTML;
+            this.innerHTML = '<span style="font-size: 1.1em;">⏳</span> Adding...';
+            this.disabled = true;
+            this.style.background = 'linear-gradient(135deg, #6c757d 0%, #495057 100%)';
+            
+            addToCart(itemId, itemType).then(() => {
+                this.innerHTML = '<span style="font-size: 1.1em;">✅</span> Added to Cart!';
+                this.style.background = 'linear-gradient(135deg, #20c997 0%, #17a2b8 100%)';
+                
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                    this.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
+                    this.disabled = false;
+                }, 2500);
+            }).catch(() => {
+                this.innerHTML = '<span style="font-size: 1.1em;">❌</span> Error';
+                this.style.background = 'linear-gradient(135deg, #dc3545 0%, #c82333 100%)';
+                
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                    this.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
+                    this.disabled = false;
+                }, 2500);
+            });
+        });
+        
+        // Add button hover effects
+        button.addEventListener('mouseenter', function() {
+            if (!this.disabled) {
+                this.style.background = 'linear-gradient(135deg, #20c997 0%, #17a2b8 100%)';
+                this.style.transform = 'translateY(-2px)';
+                this.style.boxShadow = '0 6px 20px rgba(40, 167, 69, 0.4)';
+            }
+        });
+        
+        button.addEventListener('mouseleave', function() {
+            if (!this.disabled) {
+                this.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = '0 4px 15px rgba(40, 167, 69, 0.3)';
+            }
+        });
+    });
+    
+    container.style.display = 'block';
+    container.style.background = 'linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%)';
+    container.style.borderRadius = '20px';
+    container.style.padding = '32px';
+    container.style.marginTop = '24px';
+    container.style.border = '1px solid rgba(74, 137, 220, 0.1)';
+    container.style.boxShadow = '0 8px 32px rgba(74, 137, 220, 0.08)';
+    
+    setTimeout(() => {
+        container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 400);
+}
+
+// Helper functions (keeping existing implementation)
 function updateCartItem(cartItem, quantity) {
     const itemId = parseInt(cartItem.dataset.id);
     const itemType = cartItem.dataset.type;
@@ -704,11 +985,11 @@ function updateCartItem(cartItem, quantity) {
     .then(data => {
         if (data.success) {
             const subtotalElement = cartItem.querySelector('.cart-item-subtotal p');
-            const price = parseFloat(cartItem.querySelector('.price').textContent.replace('$', ''));
+            const price = parseFloat(cartItem.querySelector('.price').textContent.replace(' , '));
             const subtotal = (price * quantity).toFixed(2);
             
             if (subtotalElement) {
-                subtotalElement.textContent = `$${subtotal}`;
+                subtotalElement.textContent = `${subtotal}`;
             }
             
             updateCartTotals(data);
@@ -758,10 +1039,11 @@ function updateCartCount(count) {
     const cartCountElement = document.querySelector('.cart-count');
     if (cartCountElement) {
         cartCountElement.textContent = count;
-        cartCountElement.style.transform = 'scale(1.2)';
+        cartCountElement.style.transform = 'scale(1.3)';
+        cartCountElement.style.transition = 'transform 0.3s ease';
         setTimeout(() => {
             cartCountElement.style.transform = 'scale(1)';
-        }, 200);
+        }, 300);
     }
 }
 
@@ -772,16 +1054,16 @@ function updateCartTotals(data) {
     const totalElement = document.querySelector('.summary-row.total span:last-child');
     
     if (subtotalElement && data.cart_subtotal !== undefined) {
-        subtotalElement.textContent = `$${data.cart_subtotal.toFixed(2)}`;
+        subtotalElement.textContent = `${data.cart_subtotal.toFixed(2)}`;
     }
     if (shippingElement && data.shipping !== undefined) {
-        shippingElement.textContent = `$${data.shipping.toFixed(2)}`;
+        shippingElement.textContent = `${data.shipping.toFixed(2)}`;
     }
     if (taxElement && data.tax !== undefined) {
-        taxElement.textContent = `$${data.tax.toFixed(2)}`;
+        taxElement.textContent = `${data.tax.toFixed(2)}`;
     }
     if (totalElement && data.total !== undefined) {
-        totalElement.textContent = `$${data.total.toFixed(2)}`;
+        totalElement.textContent = `${data.total.toFixed(2)}`;
     }
 }
 
@@ -803,15 +1085,23 @@ function showNotification(message, type = 'success', duration = 4000) {
     }
     
     const notification = document.createElement('div');
-    const backgroundColor = type === 'success' ? '#4cd964' : '#dc3545';
+    const backgroundColor = type === 'success' ? 
+        'linear-gradient(135deg, #28a745 0%, #20c997 100%)' : 
+        'linear-gradient(135deg, #dc3545 0%, #c82333 100%)';
+    
     notification.style.cssText = `
-        background-color: ${backgroundColor}; color: white; padding: 12px 20px;
-        border-radius: 6px; margin-bottom: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        transition: all 0.3s ease; transform: translateX(100%); opacity: 0;
+        background: ${backgroundColor}; 
+        color: white; padding: 14px 20px;
+        border-radius: 12px; margin-bottom: 12px; 
+        box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+        transition: all 0.4s ease; transform: translateX(100%); 
+        opacity: 0; backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.2);
     `;
     notification.innerHTML = `
-        <div style="display: flex; align-items: center; gap: 8px;">
-            <span>${message}</span>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 1.2em;">${type === 'success' ? '✅' : '❌'}</span>
+            <span style="font-weight: 500;">${message}</span>
         </div>
     `;
     
@@ -825,6 +1115,6 @@ function showNotification(message, type = 'success', duration = 4000) {
     setTimeout(() => {
         notification.style.transform = 'translateX(100%)';
         notification.style.opacity = '0';
-        setTimeout(() => notification.remove(), 300);
+        setTimeout(() => notification.remove(), 400);
     }, duration);
 }
