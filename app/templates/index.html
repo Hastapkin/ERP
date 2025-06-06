@@ -55,41 +55,274 @@
     </div>
 </div>
 
-<!-- Enhanced Chat Bot -->
+<!-- Enhanced Structured Chat Bot -->
 <div class="chatbot-section">
-    <h2>🎁 Smart Gift Advisor</h2>
+    <h2>🎁 Smart Gift Advisor - Structured Conversation</h2>
     <div class="chatbot-container">
         <div class="chat-messages" id="chatMessages">
             <div class="bot-message">
-                <p><strong>Hello! I'm your Gift Guru! 🎁</strong></p>
-                <p>I'm here to help you find the perfect gift using our customer data and purchase insights!</p>
-                <p><strong>To get started, just tell me:</strong></p>
-                <p>👶 <strong>What's the age</strong> of the gift recipient? (We specialize in ages 3-12)</p>
+                <p><strong>🎁 Hello! I'm your Gift Guru!</strong></p>
+                <p>I'm here to help you find the perfect gift through <strong>4 simple questions</strong>!</p>
+                <br>
                 <div class="conversation-hints">
-                    <p><em>I'll also ask about gender, interests, and budget to give you the best recommendations based on what other customers loved!</em></p>
+                    <p><em>I'll ask about gender, interests, and budget to give you perfect recommendations!</em></p>
                 </div>
             </div>
         </div>
         <div class="chat-input">
-            <input type="text" id="chatInput" placeholder="Tell me the age of the gift recipient...">
+            <input type="text" id="chatInput" placeholder="Tell me the age of the gift recipient (3-12 years old)...">
             <button id="sendButton">Send</button>
         </div>
     </div>
     
-    <!-- Quick Start Suggestions -->
+    <!-- Structured Quick Start Suggestions -->
     <div class="chat-suggestions" id="chatSuggestions">
-        <h4>💡 Quick Start Examples:</h4>
-        <button class="suggestion-btn" onclick="sendSuggestion('I need a gift for my 8-year-old daughter')">8-year-old daughter</button>
-        <button class="suggestion-btn" onclick="sendSuggestion('Gift for a 6-year-old boy who loves building toys')">6-year-old boy, building toys</button>
-        <button class="suggestion-btn" onclick="sendSuggestion('Looking for something under $30 for a 10-year-old')">Under $30, 10-year-old</button>
-        <button class="suggestion-btn" onclick="sendSuggestion('My 5-year-old loves art and crafts')">5-year-old, arts & crafts</button>
-        <button class="suggestion-btn" onclick="sendSuggestion('Birthday gift for 9-year-old girl, around $25')">Birthday, 9-year-old girl, $25</button>
+        <h4>💡 Quick Start Examples (Try one of these!):</h4>
+        <button class="suggestion-btn" onclick="sendSuggestion('I need a gift for my 8-year-old daughter')">
+            8-year-old daughter
+        </button>
+        <button class="suggestion-btn" onclick="sendSuggestion('Gift for a 6-year-old boy who loves building toys')">
+            6-year-old boy, loves building
+        </button>
+        <button class="suggestion-btn" onclick="sendSuggestion('Looking for something under $30 for a 10-year-old')">
+            10-year-old, under $30
+        </button>
+        <button class="suggestion-btn" onclick="sendSuggestion('My 5-year-old loves art and crafts')">
+            5-year-old, arts & crafts
+        </button>
+        <button class="suggestion-btn" onclick="sendSuggestion('Birthday gift for 9-year-old girl, around $25')">
+            9-year-old girl, birthday, $25
+        </button>
+    </div>
+    
+    <!-- How It Works Section -->
+    <div style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 12px; padding: 20px; margin: 20px 0; border: 1px solid #e6e6e6;">
+        <h4 style="margin: 0 0 15px 0; color: #4a89dc; display: flex; align-items: center; gap: 8px;">
+            <span>📋</span> How It Works:
+        </h4>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; font-size: 0.9em;">
+            <div style="text-align: center; padding: 10px;">
+                <div style="background: #4a89dc; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; font-weight: bold;">1</div>
+                <strong>Age</strong><br>
+                <span style="color: #666;">3-12 years old</span>
+            </div>
+            <div style="text-align: center; padding: 10px;">
+                <div style="background: #4a89dc; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; font-weight: bold;">2</div>
+                <strong>Gender</strong><br>
+                <span style="color: #666;">Boy or Girl</span>
+            </div>
+            <div style="text-align: center; padding: 10px;">
+                <div style="background: #4a89dc; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; font-weight: bold;">3</div>
+                <strong>Interests</strong><br>
+                <span style="color: #666;">What they love</span>
+            </div>
+            <div style="text-align: center; padding: 10px;">
+                <div style="background: #4a89dc; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; font-weight: bold;">4</div>
+                <strong>Budget</strong><br>
+                <span style="color: #666;">Your price range</span>
+            </div>
+            <div style="text-align: center; padding: 10px;">
+                <div style="background: #4cd964; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; font-weight: bold;">✓</div>
+                <strong>Confirm</strong><br>
+                <span style="color: #666;">Get recommendations</span>
+            </div>
+        </div>
     </div>
     
     <div class="recommendations-container" id="recommendations" style="display: none;">
         <!-- Recommended products will appear here -->
     </div>
 </div>
+
+<style>
+/* Enhanced conversation progress styles */
+.conversation-progress {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+    gap: 20px;
+    padding: 15px;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border-radius: 15px;
+    border: 1px solid #e6e6e6;
+}
+
+.progress-step {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #e0e0e0;
+    color: #666;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.progress-step.completed {
+    background: #4cd964;
+    color: white;
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(76, 217, 100, 0.3);
+}
+
+.progress-step.current {
+    background: #4a89dc;
+    color: white;
+    transform: scale(1.2);
+    box-shadow: 0 0 0 4px rgba(74, 137, 220, 0.2);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 4px rgba(74, 137, 220, 0.2);
+    }
+    50% {
+        box-shadow: 0 0 0 8px rgba(74, 137, 220, 0.1);
+    }
+    100% {
+        box-shadow: 0 0 0 4px rgba(74, 137, 220, 0.2);
+    }
+}
+
+/* Enhanced suggestions styling */
+.chat-suggestions {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 15px;
+    padding: 20px;
+    margin: 15px 0;
+    border: 2px solid #e6e6e6;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+}
+
+.chat-suggestions h4 {
+    margin: 0 0 15px 0;
+    color: #4a89dc;
+    font-size: 1.1em;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.chat-suggestions .suggestion-btn {
+    display: inline-block;
+    margin: 8px 12px 8px 0;
+    padding: 12px 18px;
+    background: white;
+    border: 2px solid #4a89dc;
+    border-radius: 25px;
+    color: #4a89dc;
+    font-size: 0.9em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    box-shadow: 0 3px 10px rgba(74, 137, 220, 0.1);
+    text-align: center;
+    min-width: 160px;
+}
+
+.chat-suggestions .suggestion-btn:hover {
+    background: #4a89dc;
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(74, 137, 220, 0.3);
+}
+
+.chat-suggestions .suggestion-btn:active {
+    transform: translateY(-1px);
+}
+
+/* Enhanced confirmation buttons */
+.confirmation-buttons {
+    display: flex;
+    gap: 15px;
+    margin: 20px 0;
+    justify-content: center;
+    padding: 20px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 15px;
+    border: 2px solid #e6e6e6;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.confirmation-buttons button {
+    padding: 15px 30px;
+    border: none;
+    border-radius: 30px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    min-width: 200px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .chat-suggestions .suggestion-btn {
+        display: block;
+        width: 100%;
+        margin: 8px 0;
+        text-align: center;
+        white-space: normal;
+        line-height: 1.4;
+        padding: 15px 20px;
+        min-width: auto;
+    }
+    
+    .conversation-progress {
+        gap: 12px;
+        padding: 12px;
+    }
+    
+    .progress-step {
+        width: 35px;
+        height: 35px;
+        font-size: 0.9em;
+    }
+    
+    .confirmation-buttons {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .confirmation-buttons button {
+        width: 100%;
+        min-width: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .chat-suggestions {
+        padding: 15px;
+        margin: 10px 0;
+    }
+    
+    .chat-suggestions h4 {
+        font-size: 1em;
+    }
+    
+    .conversation-progress {
+        gap: 8px;
+        padding: 10px;
+        margin: 15px 0;
+    }
+    
+    .progress-step {
+        width: 30px;
+        height: 30px;
+        font-size: 0.8em;
+    }
+}
+</style>
 
 <script>
 function sendSuggestion(text) {
@@ -102,6 +335,17 @@ function sendSuggestion(text) {
         suggestions.style.display = 'none';
     }
     
+    // Show progress indicator
+    const progress = document.getElementById('conversationProgress');
+    if (progress) {
+        progress.style.display = 'flex';
+    }
+    
+    // Mark conversation as started
+    if (window.chatbotState) {
+        window.chatbotState.conversationStarted = true;
+    }
+    
     // Trigger send
     const sendButton = document.getElementById('sendButton');
     if (sendButton) {
@@ -109,24 +353,72 @@ function sendSuggestion(text) {
     }
 }
 
+// Update progress indicator based on conversation stage
+function updateProgressIndicator(stage) {
+    const steps = ['step1', 'step2', 'step3', 'step4', 'stepConfirm'];
+    const stageToStep = {
+        'greeting': 0,
+        'age': 0,
+        'gender': 1,
+        'interests': 2,
+        'budget': 3,
+        'confirmation': 4,
+        'recommendations': 4
+    };
+    
+    const currentStep = stageToStep[stage] || 0;
+    
+    steps.forEach((stepId, index) => {
+        const element = document.getElementById(stepId);
+        if (element) {
+            element.classList.remove('current', 'completed');
+            
+            if (index < currentStep) {
+                element.classList.add('completed');
+            } else if (index === currentStep) {
+                element.classList.add('current');
+            }
+        }
+    });
+}
+
 // Hide suggestions when user starts typing
 document.addEventListener('DOMContentLoaded', function() {
     const chatInput = document.getElementById('chatInput');
     const suggestions = document.getElementById('chatSuggestions');
+    const progress = document.getElementById('conversationProgress');
     
     if (chatInput && suggestions) {
         chatInput.addEventListener('input', function() {
             if (this.value.length > 0) {
                 suggestions.style.display = 'none';
+                if (progress) {
+                    progress.style.display = 'flex';
+                }
             }
         });
         
         chatInput.addEventListener('focus', function() {
             if (this.value.length > 0) {
                 suggestions.style.display = 'none';
+                if (progress) {
+                    progress.style.display = 'flex';
+                }
             }
         });
     }
+    
+    // Override the original updateChatPlaceholder to also update progress
+    const originalUpdatePlaceholder = window.updateChatPlaceholder;
+    window.updateChatPlaceholder = function() {
+        if (originalUpdatePlaceholder) {
+            originalUpdatePlaceholder();
+        }
+        
+        if (window.chatbotState && window.chatbotState.conversationStage) {
+            updateProgressIndicator(window.chatbotState.conversationStage);
+        }
+    };
 });
 </script>
 {% endblock %}
