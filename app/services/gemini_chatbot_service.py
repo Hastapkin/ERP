@@ -979,7 +979,7 @@ class GeminiChatbotService:
 # Create singleton instance
 try:
     gemini_chatbot_service = GeminiChatbotService()
-    print("✅ Enhanced Gemini Chatbot Service with No Products Handling created successfully")
+    print(" Enhanced Gemini Chatbot Service with No Products Handling created successfully")
 except Exception as e:
-    print(f"❌ Failed to create Enhanced Gemini Chatbot Service: {e}")
+    print(f" Failed to create Enhanced Gemini Chatbot Service: {e}")
     gemini_chatbot_service = None
